@@ -26,6 +26,8 @@ class TopicSerializer(serializers.ModelSerializer):
 class LessonListSerializer(serializers.ModelSerializer):
     topic = TopicSerializer(read_only=True)
     is_bookmarked = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
+    questions_count = serializers.IntegerField(source="questions.count", read_only=True)
 
     class Meta:
         model = Lesson
@@ -36,6 +38,10 @@ class LessonListSerializer(serializers.ModelSerializer):
             "short_description",
             "difficulty",
             "estimated_minutes",
+            "rating",
+            "learners_count",
+            "questions_count",
+            "image_url",
             "topic",
             "is_bookmarked",
         )
@@ -45,6 +51,12 @@ class LessonListSerializer(serializers.ModelSerializer):
         if not user.is_authenticated:
             return False
         return Bookmark.objects.filter(user=user, lesson=obj).exists()
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if not obj.cover_image:
+            return ""
+        return request.build_absolute_uri(obj.cover_image.url) if request else obj.cover_image.url
 
 
 class LessonDetailSerializer(LessonListSerializer):

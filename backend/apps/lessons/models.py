@@ -20,6 +20,10 @@ class Lesson(models.Model):
     short_description = models.TextField()
     theory = models.TextField()
     article_excerpt = models.TextField()
+    cover_image = models.ImageField(upload_to="lessons/", blank=True, null=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    rating = models.DecimalField(max_digits=3, decimal_places=1, default=5.0)
+    learners_count = models.PositiveIntegerField(default=0)
     difficulty = models.CharField(max_length=30, default="beginner")
     estimated_minutes = models.PositiveIntegerField(default=10)
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/models/app_models.dart';
 
-class LessonDetailScreen extends StatelessWidget {
+class LessonDetailScreen extends StatefulWidget {
   const LessonDetailScreen({
     super.key,
     required this.lesson,
@@ -13,90 +13,406 @@ class LessonDetailScreen extends StatelessWidget {
   final Future<void> Function(bool currentlyBookmarked) onToggleBookmark;
 
   @override
+  State<LessonDetailScreen> createState() => _LessonDetailScreenState();
+}
+
+class _LessonDetailScreenState extends State<LessonDetailScreen> {
+  int? _selectedOptionIndex;
+  bool _showAnswerState = false;
+  int _currentQuestionIndex = 0;
+  int _correctAnswers = 0;
+  bool _quizStarted = false;
+  bool _quizCompleted = false;
+
+  LessonQuestion get _currentQuestion =>
+      widget.lesson.questions[_currentQuestionIndex];
+
+  void _startQuiz() {
+    setState(() {
+      _quizStarted = true;
+      _quizCompleted = false;
+      _currentQuestionIndex = 0;
+      _selectedOptionIndex = null;
+      _correctAnswers = 0;
+      _showAnswerState = false;
+    });
+  }
+
+  void _selectOption(int index) {
+    if (_showAnswerState) {
+      return;
+    }
+    setState(() => _selectedOptionIndex = index);
+  }
+
+  void _checkAnswer() {
+    if (_selectedOptionIndex == null) {
+      return;
+    }
+    final option = _currentQuestion.options[_selectedOptionIndex!];
+    if (option.isCorrect) {
+      _correctAnswers += 1;
+    }
+    setState(() => _showAnswerState = true);
+  }
+
+  void _goNext() {
+    if (_currentQuestionIndex >= widget.lesson.questions.length - 1) {
+      setState(() => _quizCompleted = true);
+      return;
+    }
+    setState(() {
+      _currentQuestionIndex += 1;
+      _selectedOptionIndex = null;
+      _showAnswerState = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(lesson.title),
+        title: Text(widget.lesson.title),
         actions: [
           IconButton(
-            onPressed: () => onToggleBookmark(lesson.isBookmarked),
-            icon: Icon(lesson.isBookmarked ? Icons.favorite : Icons.favorite_border),
+            onPressed: () =>
+                widget.onToggleBookmark(widget.lesson.isBookmarked),
+            icon: Icon(
+              widget.lesson.isBookmarked
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+            ),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          Text(
-            'Статья ${lesson.topic.articleCode}',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.blueAccent),
-          ),
-          const SizedBox(height: 8),
-          Text(lesson.description, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Краткая теория', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 12),
-                  Text(lesson.theory),
-                ],
-              ),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 220),
+        child: _quizCompleted
+            ? _LessonCompletedView(
+                lesson: widget.lesson,
+                correctAnswers: _correctAnswers,
+                onRestart: _startQuiz,
+              )
+            : !_quizStarted
+                ? _LessonIntroView(
+                    lesson: widget.lesson,
+                    onStartQuiz: _startQuiz,
+                  )
+                : _LessonQuizView(
+                    lesson: widget.lesson,
+                    currentQuestionIndex: _currentQuestionIndex,
+                    selectedOptionIndex: _selectedOptionIndex,
+                    showAnswerState: _showAnswerState,
+                    correctAnswers: _correctAnswers,
+                    onSelectOption: _selectOption,
+                    onCheckAnswer: _checkAnswer,
+                    onNextQuestion: _goNext,
+                  ),
+      ),
+    );
+  }
+}
+
+class _LessonIntroView extends StatelessWidget {
+  const _LessonIntroView({
+    required this.lesson,
+    required this.onStartQuiz,
+  });
+
+  final LessonDetail lesson;
+  final VoidCallback onStartQuiz;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        _LessonHeroCard(lesson: lesson),
+        const SizedBox(height: 16),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Статья ${lesson.topic.articleCode}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.blueAccent,
+                      ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  lesson.description,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Краткая теория',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+                Text(lesson.theory),
+                const SizedBox(height: 14),
+                const Text(
+                  'Фрагмент статьи',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+                Text(lesson.articleExcerpt),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Фрагмент статьи', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 12),
-                  Text(lesson.articleExcerpt),
-                ],
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: onStartQuiz,
+          child: Text('Начать урок (${lesson.questions.length} вопросов)'),
+        ),
+      ],
+    );
+  }
+}
+
+class _LessonQuizView extends StatelessWidget {
+  const _LessonQuizView({
+    required this.lesson,
+    required this.currentQuestionIndex,
+    required this.selectedOptionIndex,
+    required this.showAnswerState,
+    required this.correctAnswers,
+    required this.onSelectOption,
+    required this.onCheckAnswer,
+    required this.onNextQuestion,
+  });
+
+  final LessonDetail lesson;
+  final int currentQuestionIndex;
+  final int? selectedOptionIndex;
+  final bool showAnswerState;
+  final int correctAnswers;
+  final ValueChanged<int> onSelectOption;
+  final VoidCallback onCheckAnswer;
+  final VoidCallback onNextQuestion;
+
+  @override
+  Widget build(BuildContext context) {
+    final question = lesson.questions[currentQuestionIndex];
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(999),
+                child: LinearProgressIndicator(
+                  value: (currentQuestionIndex + 1) / lesson.questions.length,
+                  minHeight: 10,
+                  backgroundColor: Colors.white12,
+                ),
               ),
             ),
+            const SizedBox(width: 12),
+            Text('${currentQuestionIndex + 1}/${lesson.questions.length}'),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  lesson.title,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  question.prompt,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          const Text('Мини-тест', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          ...lesson.questions.map(
-            (question) => Card(
-              child: Padding(
+        ),
+        const SizedBox(height: 16),
+        ...question.options.asMap().entries.map((entry) {
+          final index = entry.key;
+          final option = entry.value;
+          final isSelected = selectedOptionIndex == index;
+          final isCorrect = option.isCorrect;
+          final bool highlightCorrect = showAnswerState && isCorrect;
+          final bool highlightWrong =
+              showAnswerState && isSelected && !isCorrect;
+
+          Color borderColor = Colors.white12;
+          if (highlightCorrect) {
+            borderColor = const Color(0xFF48D875);
+          } else if (highlightWrong) {
+            borderColor = const Color(0xFFFF6B6B);
+          } else if (isSelected) {
+            borderColor = const Color(0xFF2E83FF);
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: InkWell(
+              onTap: () => onSelectOption(index),
+              borderRadius: BorderRadius.circular(18),
+              child: Container(
                 padding: const EdgeInsets.all(16),
-                child: Column(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF282828),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: borderColor, width: 2),
+                ),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(question.prompt, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 12),
-                    ...question.options.map(
-                      (option) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              option.isCorrect ? Icons.check_circle : Icons.radio_button_unchecked,
-                              color: option.isCorrect ? Colors.green : Colors.white54,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(child: Text(option.text)),
-                          ],
-                        ),
-                      ),
+                    Icon(
+                      highlightCorrect
+                          ? Icons.check_circle_rounded
+                          : highlightWrong
+                              ? Icons.cancel_rounded
+                              : isSelected
+                                  ? Icons.radio_button_checked_rounded
+                                  : Icons.radio_button_off_rounded,
+                      color: borderColor,
                     ),
-                    if (question.explanation.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(question.explanation, style: const TextStyle(color: Colors.white70)),
-                    ],
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(option.text)),
                   ],
                 ),
               ),
             ),
+          );
+        }),
+        if (showAnswerState && question.explanation.isNotEmpty) ...[
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                question.explanation,
+                style: const TextStyle(color: Colors.white70, height: 1.35),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        ElevatedButton(
+          onPressed: showAnswerState
+              ? onNextQuestion
+              : selectedOptionIndex == null
+                  ? null
+                  : onCheckAnswer,
+          child: Text(
+            showAnswerState
+                ? (currentQuestionIndex == lesson.questions.length - 1
+                    ? 'Завершить урок'
+                    : 'Следующий вопрос')
+                : 'Проверить ответ',
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Верных ответов: $correctAnswers',
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white70),
+        ),
+      ],
+    );
+  }
+}
+
+class _LessonCompletedView extends StatelessWidget {
+  const _LessonCompletedView({
+    required this.lesson,
+    required this.correctAnswers,
+    required this.onRestart,
+  });
+
+  final LessonDetail lesson;
+  final int correctAnswers;
+  final VoidCallback onRestart;
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = lesson.questions.isEmpty
+        ? 0
+        : (correctAnswers / lesson.questions.length * 100).round();
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.verified_rounded,
+                size: 84, color: Color(0xFF48D875)),
+            const SizedBox(height: 18),
+            Text(
+              'Урок завершён',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Вы ответили верно на $correctAnswers из ${lesson.questions.length} вопросов',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$percent%',
+              style: const TextStyle(
+                fontSize: 38,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF2E83FF),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: onRestart,
+              child: const Text('Пройти ещё раз'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LessonHeroCard extends StatelessWidget {
+  const _LessonHeroCard({required this.lesson});
+
+  final LessonDetail lesson;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1E8BFF), Color(0xFF6B43FF)],
+        ),
+      ),
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            lesson.title,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '${lesson.questions.length} вопросов • ${lesson.estimatedMinutes} минут',
+            style: const TextStyle(fontSize: 16),
           ),
         ],
       ),

@@ -12,7 +12,7 @@ class LessonListView(generics.ListAPIView):
 
     def get_queryset(self):
         ensure_demo_content()
-        queryset = Lesson.objects.select_related("topic").all().order_by("topic__article_code", "title")
+        queryset = Lesson.objects.select_related("topic").prefetch_related("questions").all().order_by("sort_order", "topic__article_code", "title")
         topic_slug = self.request.query_params.get("topic")
         if topic_slug:
             queryset = queryset.filter(topic__slug=topic_slug)
@@ -33,7 +33,7 @@ class BookmarkListView(generics.ListAPIView):
 
     def get_queryset(self):
         ensure_demo_content()
-        return Bookmark.objects.filter(user=self.request.user).select_related("lesson__topic").order_by("-created_at")
+        return Bookmark.objects.filter(user=self.request.user).select_related("lesson__topic").prefetch_related("lesson__questions").order_by("-created_at")
 
 
 class BookmarkToggleView(APIView):

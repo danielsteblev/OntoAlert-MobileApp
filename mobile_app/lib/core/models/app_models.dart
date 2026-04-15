@@ -54,6 +54,10 @@ class LessonSummary {
     required this.estimatedMinutes,
     required this.isBookmarked,
     required this.topic,
+    required this.imageUrl,
+    required this.rating,
+    required this.learnersCount,
+    required this.questionsCount,
   });
 
   final int id;
@@ -63,6 +67,10 @@ class LessonSummary {
   final int estimatedMinutes;
   final bool isBookmarked;
   final LessonTopic topic;
+  final String imageUrl;
+  final double rating;
+  final int learnersCount;
+  final int questionsCount;
 
   factory LessonSummary.fromJson(Map<String, dynamic> json) {
     return LessonSummary(
@@ -73,6 +81,10 @@ class LessonSummary {
       estimatedMinutes: (json['estimated_minutes'] as num?)?.toInt() ?? 0,
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
       topic: LessonTopic.fromJson(json['topic'] as Map<String, dynamic>? ?? {}),
+      imageUrl: json['image_url']?.toString() ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      learnersCount: (json['learners_count'] as num?)?.toInt() ?? 0,
+      questionsCount: (json['questions_count'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -108,7 +120,8 @@ class LessonQuestion {
       prompt: json['prompt']?.toString() ?? '',
       explanation: json['explanation']?.toString() ?? '',
       options: rawOptions
-          .map((option) => QuestionOption.fromJson(option as Map<String, dynamic>))
+          .map((option) =>
+              QuestionOption.fromJson(option as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -123,6 +136,10 @@ class LessonDetail extends LessonSummary {
     required super.estimatedMinutes,
     required super.isBookmarked,
     required super.topic,
+    required super.imageUrl,
+    required super.rating,
+    required super.learnersCount,
+    required super.questionsCount,
     required this.theory,
     required this.articleExcerpt,
     required this.questions,
@@ -142,34 +159,65 @@ class LessonDetail extends LessonSummary {
       estimatedMinutes: (json['estimated_minutes'] as num?)?.toInt() ?? 0,
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
       topic: LessonTopic.fromJson(json['topic'] as Map<String, dynamic>? ?? {}),
+      imageUrl: json['image_url']?.toString() ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      learnersCount: (json['learners_count'] as num?)?.toInt() ?? 0,
+      questionsCount: (json['questions_count'] as num?)?.toInt() ?? 0,
       theory: json['theory']?.toString() ?? '',
       articleExcerpt: json['article_excerpt']?.toString() ?? '',
       questions: rawQuestions
-          .map((question) => LessonQuestion.fromJson(question as Map<String, dynamic>))
+          .map((question) =>
+              LessonQuestion.fromJson(question as Map<String, dynamic>))
           .toList(),
+    );
+  }
+}
+
+class StorySlide {
+  const StorySlide({
+    required this.id,
+    required this.imageUrl,
+    required this.sortOrder,
+  });
+
+  final int id;
+  final String imageUrl;
+  final int sortOrder;
+
+  factory StorySlide.fromJson(Map<String, dynamic> json) {
+    return StorySlide(
+      id: json['id'] as int? ?? 0,
+      imageUrl: json['image_url']?.toString() ?? '',
+      sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
     );
   }
 }
 
 class HintStory {
   const HintStory({
+    required this.id,
     required this.title,
-    required this.subtitle,
-    required this.body,
-    required this.highlightText,
+    required this.coverImageUrl,
+    required this.slides,
+    required this.sortOrder,
   });
 
+  final int id;
   final String title;
-  final String subtitle;
-  final String body;
-  final String highlightText;
+  final String coverImageUrl;
+  final List<StorySlide> slides;
+  final int sortOrder;
 
   factory HintStory.fromJson(Map<String, dynamic> json) {
+    final rawSlides = json['slides'] as List<dynamic>? ?? const [];
     return HintStory(
+      id: json['id'] as int,
       title: json['title']?.toString() ?? '',
-      subtitle: json['subtitle']?.toString() ?? '',
-      body: json['body']?.toString() ?? '',
-      highlightText: json['highlight_text']?.toString() ?? '',
+      coverImageUrl: json['cover_image_url']?.toString() ?? '',
+      slides: rawSlides
+          .map((slide) => StorySlide.fromJson(slide as Map<String, dynamic>))
+          .toList(),
+      sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -214,7 +262,8 @@ class SearchResult {
       explanation: json['explanation']?.toString() ?? '',
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0,
       lessons: rawLessons
-          .map((lesson) => LessonSummary.fromJson(lesson as Map<String, dynamic>))
+          .map((lesson) =>
+              LessonSummary.fromJson(lesson as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -233,7 +282,8 @@ class RecommendationItem {
 
   factory RecommendationItem.fromJson(Map<String, dynamic> json) {
     return RecommendationItem(
-      lesson: LessonSummary.fromJson(json['lesson'] as Map<String, dynamic>? ?? {}),
+      lesson:
+          LessonSummary.fromJson(json['lesson'] as Map<String, dynamic>? ?? {}),
       reason: json['reason']?.toString() ?? '',
       score: (json['score'] as num?)?.toDouble() ?? 0,
     );

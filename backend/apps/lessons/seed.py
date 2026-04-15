@@ -20,7 +20,7 @@ def ensure_demo_content() -> None:
 
     payload = _load_seed_payload()
 
-    from apps.content.models import HintStory
+    from apps.content.models import HintStory, HintStorySlide
 
     for topic_payload in payload["topics"]:
         topic, _ = Topic.objects.get_or_create(
@@ -42,6 +42,9 @@ def ensure_demo_content() -> None:
                     "short_description": lesson_payload["short_description"],
                     "theory": lesson_payload["theory"],
                     "article_excerpt": lesson_payload["article_excerpt"],
+                    "sort_order": lesson_payload.get("sort_order", 0),
+                    "rating": lesson_payload.get("rating", 4.8),
+                    "learners_count": lesson_payload.get("learners_count", 0),
                     "difficulty": lesson_payload.get("difficulty", "beginner"),
                     "estimated_minutes": lesson_payload.get("estimated_minutes", 10),
                 },
@@ -66,11 +69,18 @@ def ensure_demo_content() -> None:
                     )
 
     for hint_payload in payload.get("hints", []):
-        HintStory.objects.get_or_create(
+        story, _ = HintStory.objects.get_or_create(
             title=hint_payload["title"],
             defaults={
                 "subtitle": hint_payload["subtitle"],
                 "body": hint_payload["body"],
                 "highlight_text": hint_payload["highlight_text"],
+                "sort_order": hint_payload.get("sort_order", 0),
             },
         )
+        if story.image and not story.slides.exists():
+            HintStorySlide.objects.get_or_create(
+                story=story,
+                sort_order=1,
+                defaults={"image": story.image},
+            )

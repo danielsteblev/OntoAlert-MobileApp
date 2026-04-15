@@ -10,4 +10,4 @@ class HintStoryListView(generics.ListAPIView):
 
     def get_queryset(self):
         ensure_demo_content()
-        return HintStory.objects.filter(is_active=True).order_by("-created_at")
+        return HintStory.objects.filter(is_active=True).order_by("sort_order", "-created_at")
