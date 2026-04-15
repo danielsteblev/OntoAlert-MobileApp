@@ -64,16 +64,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profileTitle =
+        widget.profile.fullName.trim().isNotEmpty
+            ? widget.profile.fullName
+            : widget.profile.email;
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
         CircleAvatar(
           radius: 36,
-          backgroundColor: Colors.blueAccent.withOpacity(0.2),
+          backgroundColor: Colors.blueAccent.withValues(alpha: 0.2),
           child: const Icon(Icons.person, size: 40),
         ),
         const SizedBox(height: 16),
-        Text(widget.profile.username, style: Theme.of(context).textTheme.headlineSmall),
+        Text(profileTitle, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 20),
         TextField(controller: _fullNameController, decoration: const InputDecoration(labelText: 'ФИО')),
         const SizedBox(height: 12),

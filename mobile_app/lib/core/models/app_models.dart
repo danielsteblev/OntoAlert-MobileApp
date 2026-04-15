@@ -1,3 +1,29 @@
+int _asInt(dynamic value, {int fallback = 0}) {
+  if (value is int) {
+    return value;
+  }
+  if (value is num) {
+    return value.toInt();
+  }
+  if (value is String) {
+    return int.tryParse(value) ?? double.tryParse(value)?.toInt() ?? fallback;
+  }
+  return fallback;
+}
+
+double _asDouble(dynamic value, {double fallback = 0}) {
+  if (value is double) {
+    return value;
+  }
+  if (value is num) {
+    return value.toDouble();
+  }
+  if (value is String) {
+    return double.tryParse(value) ?? fallback;
+  }
+  return fallback;
+}
+
 class UserProfile {
   const UserProfile({
     required this.username,
@@ -74,17 +100,17 @@ class LessonSummary {
 
   factory LessonSummary.fromJson(Map<String, dynamic> json) {
     return LessonSummary(
-      id: json['id'] as int,
+      id: _asInt(json['id']),
       title: json['title']?.toString() ?? '',
       description: json['short_description']?.toString() ?? '',
       difficulty: json['difficulty']?.toString() ?? '',
-      estimatedMinutes: (json['estimated_minutes'] as num?)?.toInt() ?? 0,
+      estimatedMinutes: _asInt(json['estimated_minutes']),
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
       topic: LessonTopic.fromJson(json['topic'] as Map<String, dynamic>? ?? {}),
       imageUrl: json['image_url']?.toString() ?? '',
-      rating: (json['rating'] as num?)?.toDouble() ?? 0,
-      learnersCount: (json['learners_count'] as num?)?.toInt() ?? 0,
-      questionsCount: (json['questions_count'] as num?)?.toInt() ?? 0,
+      rating: _asDouble(json['rating']),
+      learnersCount: _asInt(json['learners_count']),
+      questionsCount: _asInt(json['questions_count']),
     );
   }
 }
@@ -152,17 +178,17 @@ class LessonDetail extends LessonSummary {
   factory LessonDetail.fromJson(Map<String, dynamic> json) {
     final rawQuestions = json['questions'] as List<dynamic>? ?? const [];
     return LessonDetail(
-      id: json['id'] as int,
+      id: _asInt(json['id']),
       title: json['title']?.toString() ?? '',
       description: json['short_description']?.toString() ?? '',
       difficulty: json['difficulty']?.toString() ?? '',
-      estimatedMinutes: (json['estimated_minutes'] as num?)?.toInt() ?? 0,
+      estimatedMinutes: _asInt(json['estimated_minutes']),
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
       topic: LessonTopic.fromJson(json['topic'] as Map<String, dynamic>? ?? {}),
       imageUrl: json['image_url']?.toString() ?? '',
-      rating: (json['rating'] as num?)?.toDouble() ?? 0,
-      learnersCount: (json['learners_count'] as num?)?.toInt() ?? 0,
-      questionsCount: (json['questions_count'] as num?)?.toInt() ?? 0,
+      rating: _asDouble(json['rating']),
+      learnersCount: _asInt(json['learners_count']),
+      questionsCount: _asInt(json['questions_count']),
       theory: json['theory']?.toString() ?? '',
       articleExcerpt: json['article_excerpt']?.toString() ?? '',
       questions: rawQuestions
@@ -186,9 +212,9 @@ class StorySlide {
 
   factory StorySlide.fromJson(Map<String, dynamic> json) {
     return StorySlide(
-      id: json['id'] as int? ?? 0,
+      id: _asInt(json['id']),
       imageUrl: json['image_url']?.toString() ?? '',
-      sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
+      sortOrder: _asInt(json['sort_order']),
     );
   }
 }
@@ -211,13 +237,13 @@ class HintStory {
   factory HintStory.fromJson(Map<String, dynamic> json) {
     final rawSlides = json['slides'] as List<dynamic>? ?? const [];
     return HintStory(
-      id: json['id'] as int,
+      id: _asInt(json['id']),
       title: json['title']?.toString() ?? '',
       coverImageUrl: json['cover_image_url']?.toString() ?? '',
       slides: rawSlides
           .map((slide) => StorySlide.fromJson(slide as Map<String, dynamic>))
           .toList(),
-      sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
+      sortOrder: _asInt(json['sort_order']),
     );
   }
 }
@@ -260,7 +286,7 @@ class SearchResult {
       query: json['query']?.toString() ?? '',
       matchedArticle: json['matched_article']?.toString() ?? '',
       explanation: json['explanation']?.toString() ?? '',
-      confidence: (json['confidence'] as num?)?.toDouble() ?? 0,
+      confidence: _asDouble(json['confidence']),
       lessons: rawLessons
           .map((lesson) =>
               LessonSummary.fromJson(lesson as Map<String, dynamic>))
@@ -285,7 +311,7 @@ class RecommendationItem {
       lesson:
           LessonSummary.fromJson(json['lesson'] as Map<String, dynamic>? ?? {}),
       reason: json['reason']?.toString() ?? '',
-      score: (json['score'] as num?)?.toDouble() ?? 0,
+      score: _asDouble(json['score']),
     );
   }
 }

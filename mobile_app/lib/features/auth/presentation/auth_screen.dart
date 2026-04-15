@@ -7,77 +7,149 @@ class AuthScreen extends StatefulWidget {
     required this.onRegister,
   });
 
-  final Future<void> Function(String username, String password) onLogin;
-  final Future<void> Function(String username, String email, String password, String fullName) onRegister;
+  final Future<void> Function(String email, String password) onLogin;
+  final Future<void> Function(String email, String password) onRegister;
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateMixin {
-  late final TabController _controller = TabController(length: 2, vsync: this);
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class _AuthScreenState extends State<AuthScreen> {
+  bool _isLoginMode = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF25A4FF), Color(0xFF1C5BFF)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 12),
-                    Icon(Icons.school_rounded, size: 72, color: Colors.white),
-                    SizedBox(height: 16),
-                    Text(
-                      'Fast-learning',
-                      style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Юридический помощник для быстрого освоения главы 20 КоАП РФ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              TabBar(
-                controller: _controller,
-                tabs: const [Tab(text: 'Вход'), Tab(text: 'Регистрация')],
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: TabBarView(
-                  controller: _controller,
-                  children: [
-                    _LoginForm(onSubmit: widget.onLogin),
-                    _RegisterForm(onSubmit: widget.onRegister),
-                  ],
-                ),
-              ),
-            ],
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          child: _AuthLayout(
+            key: ValueKey(_isLoginMode),
+            title: _isLoginMode ? 'Вход' : 'Регистрация',
+            subtitle: _isLoginMode
+                ? 'Для тех, кто уже с нами!'
+                : 'Для тех, кто у нас впервые',
+            secondaryButtonText:
+                _isLoginMode ? 'Я не зарегистрирован' : 'У меня есть аккаунт',
+            footerText: _isLoginMode
+                ? 'Если вы ещё не зарегистрированы в сервисе, пройдите регистрацию!'
+                : 'Если вы уже проходили процесс регистрации',
+            onToggleMode: () => setState(() => _isLoginMode = !_isLoginMode),
+            child: _isLoginMode
+                ? _LoginForm(onSubmit: widget.onLogin)
+                : _RegisterForm(onSubmit: widget.onRegister),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _AuthLayout extends StatelessWidget {
+  const _AuthLayout({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.secondaryButtonText,
+    required this.footerText,
+    required this.onToggleMode,
+    required this.child,
+  });
+
+  final String title;
+  final String subtitle;
+  final String secondaryButtonText;
+  final String footerText;
+  final VoidCallback onToggleMode;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 24 + bottomInset),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            height: 220,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF1F7DFF), Color(0xFF63D8FF)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: 180,
+                        child: Text(
+                          subtitle,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            height: 1.2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  top: 8,
+                  child: Image.asset(
+                    'assets/images/auth_mascot.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          child,
+          const SizedBox(height: 18),
+          SizedBox(
+            height: 56,
+            child: OutlinedButton(
+              onPressed: onToggleMode,
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF1E8BFF)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              child: Text(
+                secondaryButtonText,
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            footerText,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
+          ),
+        ],
       ),
     );
   }
@@ -86,86 +158,19 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 class _LoginForm extends StatefulWidget {
   const _LoginForm({required this.onSubmit});
 
-  final Future<void> Function(String username, String password) onSubmit;
+  final Future<void> Function(String email, String password) onSubmit;
 
   @override
   State<_LoginForm> createState() => _LoginFormState();
 }
 
 class _LoginFormState extends State<_LoginForm> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    setState(() => _isLoading = true);
-    try {
-      await widget.onSubmit(_usernameController.text.trim(), _passwordController.text.trim());
-    } catch (error) {
-      _showError(error);
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  void _showError(Object error) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        const SizedBox(height: 8),
-        TextField(
-          controller: _usernameController,
-          decoration: const InputDecoration(labelText: 'Введите логин'),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _passwordController,
-          obscureText: true,
-          decoration: const InputDecoration(labelText: 'Введите пароль'),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: _isLoading ? null : _submit,
-          child: Text(_isLoading ? 'Входим...' : 'Войти'),
-        ),
-      ],
-    );
-  }
-}
-
-class _RegisterForm extends StatefulWidget {
-  const _RegisterForm({required this.onSubmit});
-
-  final Future<void> Function(String username, String email, String password, String fullName) onSubmit;
-
-  @override
-  State<_RegisterForm> createState() => _RegisterFormState();
-}
-
-class _RegisterFormState extends State<_RegisterForm> {
-  final _fullNameController = TextEditingController();
-  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _fullNameController.dispose();
-    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -175,13 +180,15 @@ class _RegisterFormState extends State<_RegisterForm> {
     setState(() => _isLoading = true);
     try {
       await widget.onSubmit(
-        _usernameController.text.trim(),
         _emailController.text.trim(),
         _passwordController.text.trim(),
-        _fullNameController.text.trim(),
       );
     } catch (error) {
-      _showError(error);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -189,41 +196,160 @@ class _RegisterFormState extends State<_RegisterForm> {
     }
   }
 
-  void _showError(Object error) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _AuthTextField(
+          controller: _emailController,
+          hintText: 'Введите почту',
+          keyboardType: TextInputType.emailAddress,
+        ),
+        const SizedBox(height: 16),
+        _AuthTextField(
+          controller: _passwordController,
+          hintText: 'Введите пароль',
+          obscureText: true,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton(
+            onPressed: () {},
+            child: const Text('Забыли пароль?'),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _submit,
+            child: Text(_isLoading ? 'Входим...' : 'Войти'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RegisterForm extends StatefulWidget {
+  const _RegisterForm({required this.onSubmit});
+
+  final Future<void> Function(String email, String password) onSubmit;
+
+  @override
+  State<_RegisterForm> createState() => _RegisterFormState();
+}
+
+class _RegisterFormState extends State<_RegisterForm> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _repeatPasswordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _repeatPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_passwordController.text.trim() != _repeatPasswordController.text.trim()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Пароли не совпадают.')),
+      );
+      return;
+    }
+    setState(() => _isLoading = true);
+    try {
+      await widget.onSubmit(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Column(
       children: [
-        const SizedBox(height: 8),
-        TextField(
-          controller: _fullNameController,
-          decoration: const InputDecoration(labelText: 'ФИО'),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _usernameController,
-          decoration: const InputDecoration(labelText: 'Логин'),
-        ),
-        const SizedBox(height: 12),
-        TextField(
+        _AuthTextField(
           controller: _emailController,
-          decoration: const InputDecoration(labelText: 'Почта'),
+          hintText: 'Введите почту',
+          keyboardType: TextInputType.emailAddress,
         ),
-        const SizedBox(height: 12),
-        TextField(
+        const SizedBox(height: 16),
+        _AuthTextField(
           controller: _passwordController,
           obscureText: true,
-          decoration: const InputDecoration(labelText: 'Пароль'),
+          hintText: 'Введите пароль',
         ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: _isLoading ? null : _submit,
-          child: Text(_isLoading ? 'Создаём аккаунт...' : 'Регистрация'),
+        const SizedBox(height: 16),
+        _AuthTextField(
+          controller: _repeatPasswordController,
+          obscureText: true,
+          hintText: 'Повторите пароль',
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _submit,
+            child: Text(_isLoading ? 'Создаём аккаунт...' : 'Регистрация'),
+          ),
         ),
       ],
+    );
+  }
+}
+
+class _AuthTextField extends StatelessWidget {
+  const _AuthTextField({
+    required this.controller,
+    required this.hintText,
+    this.keyboardType,
+    this.obscureText = false,
+  });
+
+  final TextEditingController controller;
+  final String hintText;
+  final TextInputType? keyboardType;
+  final bool obscureText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: const Color(0xFF343434),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          hintText: hintText,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
+        ),
+      ),
     );
   }
 }

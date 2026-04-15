@@ -4,6 +4,7 @@ import '../../../app/app_session.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/models/app_models.dart';
 import '../../bookmarks/presentation/bookmarks_screen.dart';
+import '../../lessons/presentation/lesson_catalog_screen.dart';
 import '../../lessons/presentation/lesson_detail_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../search/presentation/search_screen.dart';
@@ -33,6 +34,16 @@ class _HomeShellState extends State<HomeShell> {
   Future<List<LessonSummary>> _loadBookmarks() =>
       widget.apiClient.fetchBookmarks();
 
+  Future<void> _toggleLessonBookmark(LessonSummary lesson) async {
+    await widget.apiClient.toggleBookmark(
+      lesson.id,
+      bookmarked: lesson.isBookmarked,
+    );
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   Future<void> _openLesson(LessonSummary lesson) async {
     final detail = await widget.apiClient.fetchLessonDetail(lesson.id);
     if (!mounted) {
@@ -50,6 +61,13 @@ class _HomeShellState extends State<HomeShell> {
               setState(() {});
             }
           },
+          onSubmitCompletion: ({required scorePercent, required rating}) {
+            return widget.apiClient.submitLessonCompletion(
+              lessonId: lesson.id,
+              scorePercent: scorePercent,
+              rating: rating,
+            );
+          },
         ),
       ),
     );
@@ -59,12 +77,14 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Future<void> _openSearch() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => SearchScreen(
-          onSearch: widget.apiClient.semanticSearch,
-          onOpenLesson: _openLesson,
-        ),
+    await showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'search',
+      barrierColor: Colors.transparent,
+      pageBuilder: (_, __, ___) => SearchScreen(
+        onSearch: widget.apiClient.semanticSearch,
+        onOpenLesson: _openLesson,
       ),
     );
     if (mounted) {
@@ -80,6 +100,25 @@ class _HomeShellState extends State<HomeShell> {
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => SearchHistoryScreen(history: history)),
     );
+  }
+
+  Future<void> _openAllLessons() async {
+    final lessons = await _loadLessons();
+    if (!mounted) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => LessonCatalogScreen(
+          lessons: lessons,
+          onOpenLesson: _openLesson,
+          onToggleBookmark: _toggleLessonBookmark,
+        ),
+      ),
+    );
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _openStory(HintStory story) async {
@@ -99,8 +138,10 @@ class _HomeShellState extends State<HomeShell> {
         lessonsFuture: _loadLessons(),
         hintsFuture: _loadHints(),
         onOpenLesson: _openLesson,
+        onToggleBookmark: _toggleLessonBookmark,
         onOpenSearch: _openSearch,
         onOpenSearchHistory: _openSearchHistory,
+        onOpenAllLessons: _openAllLessons,
         onOpenStory: _openStory,
         viewedStoryIds: _viewedStoryIds,
       ),
@@ -162,8 +203,10 @@ class _HomeDashboard extends StatelessWidget {
     required this.lessonsFuture,
     required this.hintsFuture,
     required this.onOpenLesson,
+    required this.onToggleBookmark,
     required this.onOpenSearch,
     required this.onOpenSearchHistory,
+    required this.onOpenAllLessons,
     required this.onOpenStory,
     required this.viewedStoryIds,
   });
@@ -171,8 +214,10 @@ class _HomeDashboard extends StatelessWidget {
   final Future<List<LessonSummary>> lessonsFuture;
   final Future<List<HintStory>> hintsFuture;
   final Future<void> Function(LessonSummary lesson) onOpenLesson;
+  final Future<void> Function(LessonSummary lesson) onToggleBookmark;
   final Future<void> Function() onOpenSearch;
   final Future<void> Function() onOpenSearchHistory;
+  final Future<void> Function() onOpenAllLessons;
   final Future<void> Function(HintStory story) onOpenStory;
   final Set<int> viewedStoryIds;
 
@@ -219,15 +264,41 @@ class _HomeDashboard extends StatelessWidget {
           child: _SectionContainer(
             title: 'Уроки для вас',
             actionText: 'Все уроки',
-            onActionTap: onOpenSearchHistory,
+            onActionTap: onOpenAllLessons,
             child: FutureBuilder<List<LessonSummary>>(
               future: lessonsFuture,
               builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 220,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return SizedBox(
+                    height: 220,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          'Не удалось загрузить уроки.\nПроверь backend и повтори запуск.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                    ),
+                  );
+                }
                 final lessons = snapshot.data ?? const <LessonSummary>[];
                 if (lessons.isEmpty) {
                   return const SizedBox(
                     height: 220,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(
+                      child: Text(
+                        'Пока уроков нет',
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ),
                   );
                 }
                 return SizedBox(
@@ -239,6 +310,7 @@ class _HomeDashboard extends StatelessWidget {
                     itemBuilder: (context, index) => _LessonCard(
                       lesson: lessons[index],
                       onTap: () => onOpenLesson(lessons[index]),
+                      onToggleFavorite: () => onToggleBookmark(lessons[index]),
                     ),
                   ),
                 );
@@ -444,10 +516,12 @@ class _LessonCard extends StatelessWidget {
   const _LessonCard({
     required this.lesson,
     required this.onTap,
+    required this.onToggleFavorite,
   });
 
   final LessonSummary lesson;
   final VoidCallback onTap;
+  final VoidCallback onToggleFavorite;
 
   @override
   Widget build(BuildContext context) {
@@ -463,7 +537,7 @@ class _LessonCard extends StatelessWidget {
               children: [
                 _CoverImage(
                   imageUrl: lesson.imageUrl,
-                  title: lesson.title,
+                  title: '',
                   width: 150,
                   height: 104,
                   borderRadius: 22,
@@ -471,19 +545,23 @@ class _LessonCard extends StatelessWidget {
                 Positioned(
                   right: 8,
                   top: 8,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Icon(
-                      lesson.isBookmarked
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: const Color(0xFFFF5DAA),
-                      size: 18,
+                  child: Material(
+                    color: Colors.white,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: onToggleFavorite,
+                      child: SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: Icon(
+                          lesson.isBookmarked
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: const Color(0xFFFF5DAA),
+                          size: 18,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -495,14 +573,6 @@ class _LessonCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              lesson.description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 14, color: Colors.white70, height: 1.05),
             ),
             const SizedBox(height: 8),
             Row(

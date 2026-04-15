@@ -17,7 +17,7 @@ class Lesson(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
-    short_description = models.TextField()
+    short_description = models.TextField(blank=True, default="")
     theory = models.TextField()
     article_excerpt = models.TextField()
     cover_image = models.ImageField(upload_to="lessons/", blank=True, null=True)
@@ -59,3 +59,17 @@ class Bookmark(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} -> {self.lesson}"
+
+
+class LessonAttempt(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="lesson_attempts")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="attempts")
+    score_percent = models.PositiveIntegerField(default=0)
+    rating = models.PositiveIntegerField(null=True, blank=True)
+    completed_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("user", "lesson")
+
+    def __str__(self) -> str:
+        return f"{self.user} -> {self.lesson} ({self.score_percent}%)"

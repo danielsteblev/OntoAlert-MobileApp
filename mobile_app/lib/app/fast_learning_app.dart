@@ -28,15 +28,13 @@ class _FastLearningAppState extends State<FastLearningApp> {
           home: _session.isAuthenticated
               ? HomeShell(session: _session, apiClient: _apiClient)
               : AuthScreen(
-                  onLogin: (username, password) => _session.login(
-                    username: username,
-                    password: password,
-                  ),
-                  onRegister: (username, email, password, fullName) => _session.register(
-                    username: username,
+                  onLogin: (email, password) => _session.login(
                     email: email,
                     password: password,
-                    fullName: fullName,
+                  ),
+                  onRegister: (email, password) => _session.register(
+                    email: email,
+                    password: password,
                   ),
                 ),
         );

@@ -25,13 +25,13 @@ class ApiClient {
   }
 
   Future<AuthPayload> login({
-    required String username,
+    required String email,
     required String password,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/login'),
       headers: _headers,
-      body: jsonEncode({'username': username, 'password': password}),
+      body: jsonEncode({'email': email, 'password': password}),
     );
     final data = _decode(response);
     return AuthPayload(
@@ -41,19 +41,15 @@ class ApiClient {
   }
 
   Future<AuthPayload> register({
-    required String username,
     required String email,
     required String password,
-    required String fullName,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/register'),
       headers: _headers,
       body: jsonEncode({
-        'username': username,
         'email': email,
         'password': password,
-        'full_name': fullName,
       }),
     );
     final data = _decode(response);
@@ -96,6 +92,23 @@ class ApiClient {
   Future<LessonDetail> fetchLessonDetail(int id) async {
     final response = await http.get(Uri.parse('$baseUrl/api/lessons/$id'), headers: _headers);
     return LessonDetail.fromJson(_decode(response));
+  }
+
+  Future<LessonDetail> submitLessonCompletion({
+    required int lessonId,
+    required int scorePercent,
+    required int rating,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/lessons/$lessonId/complete'),
+      headers: _headers,
+      body: jsonEncode({
+        'score_percent': scorePercent,
+        'rating': rating,
+      }),
+    );
+    final data = _decode(response) as Map<String, dynamic>;
+    return LessonDetail.fromJson(data['lesson'] as Map<String, dynamic>);
   }
 
   Future<List<LessonSummary>> fetchBookmarks() async {

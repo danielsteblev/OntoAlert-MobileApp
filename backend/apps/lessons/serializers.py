@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.lessons.models import AnswerOption, Bookmark, Lesson, Question, Topic
+from apps.lessons.models import AnswerOption, Bookmark, Lesson, LessonAttempt, Question, Topic
 
 
 class AnswerOptionSerializer(serializers.ModelSerializer):
@@ -28,6 +28,8 @@ class LessonListSerializer(serializers.ModelSerializer):
     is_bookmarked = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
     questions_count = serializers.IntegerField(source="questions.count", read_only=True)
+    rating = serializers.SerializerMethodField()
+    learners_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
@@ -58,6 +60,21 @@ class LessonListSerializer(serializers.ModelSerializer):
             return ""
         return request.build_absolute_uri(obj.cover_image.url) if request else obj.cover_image.url
 
+    def get_rating(self, obj):
+        annotated = getattr(obj, "rating_live", None)
+        if annotated is not None:
+            return round(float(annotated), 1)
+        rating = obj.attempts.exclude(rating__isnull=True).values_list("rating", flat=True)
+        if not rating:
+            return 0.0
+        return round(sum(rating) / len(rating), 1)
+
+    def get_learners_count(self, obj):
+        annotated = getattr(obj, "learners_count_live", None)
+        if annotated is not None:
+            return int(annotated)
+        return obj.attempts.count()
+
 
 class LessonDetailSerializer(LessonListSerializer):
     questions = QuestionSerializer(many=True, read_only=True)
@@ -72,3 +89,12 @@ class BookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bookmark
         fields = ("id", "lesson", "created_at")
+
+
+class LessonAttemptSerializer(serializers.ModelSerializer):
+    rating = serializers.IntegerField(min_value=1, max_value=5)
+    score_percent = serializers.IntegerField(min_value=0, max_value=100)
+
+    class Meta:
+        model = LessonAttempt
+        fields = ("score_percent", "rating")

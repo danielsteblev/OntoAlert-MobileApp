@@ -7,25 +7,34 @@ class LessonDetailScreen extends StatefulWidget {
     super.key,
     required this.lesson,
     required this.onToggleBookmark,
+    required this.onSubmitCompletion,
   });
 
   final LessonDetail lesson;
   final Future<void> Function(bool currentlyBookmarked) onToggleBookmark;
+  final Future<LessonDetail> Function({
+    required int scorePercent,
+    required int rating,
+  }) onSubmitCompletion;
 
   @override
   State<LessonDetailScreen> createState() => _LessonDetailScreenState();
 }
 
 class _LessonDetailScreenState extends State<LessonDetailScreen> {
+  late LessonDetail _lesson = widget.lesson;
   int? _selectedOptionIndex;
   bool _showAnswerState = false;
   int _currentQuestionIndex = 0;
   int _correctAnswers = 0;
   bool _quizStarted = false;
   bool _quizCompleted = false;
+  int _selectedRating = 5;
+  bool _isSubmittingCompletion = false;
+  bool _hasSubmittedCompletion = false;
 
   LessonQuestion get _currentQuestion =>
-      widget.lesson.questions[_currentQuestionIndex];
+      _lesson.questions[_currentQuestionIndex];
 
   void _startQuiz() {
     setState(() {
@@ -35,6 +44,8 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
       _selectedOptionIndex = null;
       _correctAnswers = 0;
       _showAnswerState = false;
+      _selectedRating = 5;
+      _hasSubmittedCompletion = false;
     });
   }
 
@@ -57,7 +68,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
   }
 
   void _goNext() {
-    if (_currentQuestionIndex >= widget.lesson.questions.length - 1) {
+    if (_currentQuestionIndex >= _lesson.questions.length - 1) {
       setState(() => _quizCompleted = true);
       return;
     }
@@ -68,17 +79,47 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
     });
   }
 
+  Future<void> _submitCompletion() async {
+    final scorePercent = _lesson.questions.isEmpty
+        ? 0
+        : ((_correctAnswers / _lesson.questions.length) * 100).round();
+    setState(() => _isSubmittingCompletion = true);
+    try {
+      final updatedLesson = await widget.onSubmitCompletion(
+        scorePercent: scorePercent,
+        rating: _selectedRating,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _lesson = updatedLesson;
+        _hasSubmittedCompletion = true;
+      });
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmittingCompletion = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.lesson.title),
+        title: Text(_lesson.title),
         actions: [
           IconButton(
             onPressed: () =>
-                widget.onToggleBookmark(widget.lesson.isBookmarked),
+                widget.onToggleBookmark(_lesson.isBookmarked),
             icon: Icon(
-              widget.lesson.isBookmarked
+              _lesson.isBookmarked
                   ? Icons.favorite
                   : Icons.favorite_border,
             ),
@@ -89,17 +130,23 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
         duration: const Duration(milliseconds: 220),
         child: _quizCompleted
             ? _LessonCompletedView(
-                lesson: widget.lesson,
+                lesson: _lesson,
                 correctAnswers: _correctAnswers,
+                selectedRating: _selectedRating,
+                isSubmittingCompletion: _isSubmittingCompletion,
+                hasSubmittedCompletion: _hasSubmittedCompletion,
+                onSelectRating: (rating) =>
+                    setState(() => _selectedRating = rating),
+                onSubmitCompletion: _submitCompletion,
                 onRestart: _startQuiz,
               )
             : !_quizStarted
                 ? _LessonIntroView(
-                    lesson: widget.lesson,
+                    lesson: _lesson,
                     onStartQuiz: _startQuiz,
                   )
                 : _LessonQuizView(
-                    lesson: widget.lesson,
+                    lesson: _lesson,
                     currentQuestionIndex: _currentQuestionIndex,
                     selectedOptionIndex: _selectedOptionIndex,
                     showAnswerState: _showAnswerState,
@@ -141,12 +188,14 @@ class _LessonIntroView extends StatelessWidget {
                         color: Colors.blueAccent,
                       ),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  lesson.description,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w700),
-                ),
+                if (lesson.description.trim().isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    lesson.description,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                ],
                 const SizedBox(height: 14),
                 const Text(
                   'Краткая теория',
@@ -333,11 +382,21 @@ class _LessonCompletedView extends StatelessWidget {
   const _LessonCompletedView({
     required this.lesson,
     required this.correctAnswers,
+    required this.selectedRating,
+    required this.isSubmittingCompletion,
+    required this.hasSubmittedCompletion,
+    required this.onSelectRating,
+    required this.onSubmitCompletion,
     required this.onRestart,
   });
 
   final LessonDetail lesson;
   final int correctAnswers;
+  final int selectedRating;
+  final bool isSubmittingCompletion;
+  final bool hasSubmittedCompletion;
+  final ValueChanged<int> onSelectRating;
+  final Future<void> Function() onSubmitCompletion;
   final VoidCallback onRestart;
 
   @override
@@ -374,6 +433,45 @@ class _LessonCompletedView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+            const Text(
+              'Оцени урок',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                final starNumber = index + 1;
+                return IconButton(
+                  onPressed: () => onSelectRating(starNumber),
+                  icon: Icon(
+                    starNumber <= selectedRating
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: const Color(0xFF5DD17B),
+                    size: 34,
+                  ),
+                );
+              }),
+            ),
+            if (hasSubmittedCompletion) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Спасибо! Рейтинг и количество прошедших обновлены.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70),
+              ),
+            ],
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: isSubmittingCompletion ? null : onSubmitCompletion,
+              child: Text(
+                isSubmittingCompletion
+                    ? 'Сохраняем оценку...'
+                    : 'Сохранить результат',
+              ),
+            ),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: onRestart,
               child: const Text('Пройти ещё раз'),

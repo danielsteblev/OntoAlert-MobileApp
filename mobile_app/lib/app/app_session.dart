@@ -15,10 +15,10 @@ class AppSession extends ChangeNotifier {
   UserProfile? get profile => _profile;
 
   Future<void> login({
-    required String username,
+    required String email,
     required String password,
   }) async {
-    final result = await apiClient.login(username: username, password: password);
+    final result = await apiClient.login(email: email, password: password);
     _accessToken = result.token;
     apiClient.accessToken = result.token;
     _profile = result.profile;
@@ -26,16 +26,12 @@ class AppSession extends ChangeNotifier {
   }
 
   Future<void> register({
-    required String username,
     required String email,
     required String password,
-    required String fullName,
   }) async {
     final result = await apiClient.register(
-      username: username,
       email: email,
       password: password,
-      fullName: fullName,
     );
     _accessToken = result.token;
     apiClient.accessToken = result.token;

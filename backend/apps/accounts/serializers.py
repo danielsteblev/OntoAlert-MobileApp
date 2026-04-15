@@ -24,16 +24,25 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
-    full_name = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ("username", "email", "password", "full_name")
+        fields = ("email", "password")
+
+    def validate_email(self, value):
+        normalized_email = value.strip().lower()
+        if User.objects.filter(email__iexact=normalized_email).exists():
+            raise serializers.ValidationError("Пользователь с такой почтой уже существует.")
+        return normalized_email
 
     def create(self, validated_data):
-        full_name = validated_data.pop("full_name", "")
-        user = User.objects.create_user(**validated_data)
-        Profile.objects.create(user=user, full_name=full_name)
+        email = validated_data["email"]
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=validated_data["password"],
+        )
+        Profile.objects.create(user=user, full_name="")
         return user
 
     def to_representation(self, instance):
@@ -49,13 +58,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        user = authenticate(username=attrs["username"], password=attrs["password"])
+        email = attrs["email"].strip().lower()
+        user_by_email = User.objects.filter(email__iexact=email).first()
+        if not user_by_email:
+            raise serializers.ValidationError("Неверная почта или пароль.")
+
+        user = authenticate(username=user_by_email.username, password=attrs["password"])
         if not user:
-            raise serializers.ValidationError("Invalid username or password.")
+            raise serializers.ValidationError("Неверная почта или пароль.")
         attrs["user"] = user
         return attrs
 
