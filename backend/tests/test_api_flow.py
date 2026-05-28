@@ -7,10 +7,8 @@ class ApiFlowTests(APITestCase):
         response = self.client.post(
             "/api/auth/register",
             {
-                "username": "student1",
                 "email": "student@example.com",
                 "password": "strongpass123",
-                "full_name": "Иван Студент",
             },
             format="json",
         )
@@ -20,6 +18,17 @@ class ApiFlowTests(APITestCase):
 
     def test_student_flow(self):
         self.authenticate()
+
+        update_profile_response = self.client.patch(
+            "/api/profile/me",
+            {
+                "full_name": "Иван Студент",
+                "university": "МГУ",
+                "bio": "Тестовый профиль",
+            },
+            format="json",
+        )
+        self.assertEqual(update_profile_response.status_code, 200)
 
         profile_response = self.client.get("/api/profile/me")
         self.assertEqual(profile_response.status_code, 200)
