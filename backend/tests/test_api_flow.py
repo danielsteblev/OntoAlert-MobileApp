@@ -46,6 +46,9 @@ class ApiFlowTests(APITestCase):
         search_response = self.client.post("/api/search/semantic", {"query": "мелкое хулиганство в парке"}, format="json")
         self.assertEqual(search_response.status_code, 200)
         self.assertIn("matched_article", search_response.data)
+        self.assertIn("nlp", search_response.data)
+        self.assertIn("sparql", search_response.data)
+        self.assertTrue(search_response.data["sparql"]["available"])
 
         history_response = self.client.get("/api/search/history")
         self.assertEqual(history_response.status_code, 200)

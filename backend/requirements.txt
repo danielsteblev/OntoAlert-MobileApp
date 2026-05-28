@@ -7,6 +7,8 @@ psycopg2-binary==2.9.10
 python-dotenv==1.1.0
 spacy==3.8.5
 nltk==3.9.1
+pymorphy3==2.0.6
+rdflib==7.1.4
 owlready2==0.48
 pillow==12.2.0
 whitenoise

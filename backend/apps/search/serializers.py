@@ -17,7 +17,12 @@ class SearchHistorySerializer(serializers.ModelSerializer):
 class SemanticSearchResultSerializer(serializers.Serializer):
     query = serializers.CharField()
     normalized_terms = serializers.ListField(child=serializers.CharField())
+    expanded_terms = serializers.ListField(child=serializers.CharField())
     matched_article = serializers.CharField()
+    matched_terms = serializers.ListField(child=serializers.CharField())
     confidence = serializers.FloatField()
     explanation = serializers.CharField()
+    nlp = serializers.DictField()
+    sparql = serializers.DictField()
+    ranking = serializers.ListField(child=serializers.DictField())
     lessons = LessonListSerializer(many=True)

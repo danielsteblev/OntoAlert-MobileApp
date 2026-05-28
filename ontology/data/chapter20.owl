@@ -23,6 +23,11 @@
   <rdfs:range rdf:resource="#LessonTopic"/>
 </owl:ObjectProperty>
 
+<owl:ObjectProperty rdf:about="#synonymOf">
+  <rdfs:domain rdf:resource="#Keyword"/>
+  <rdfs:range rdf:resource="#Keyword"/>
+</owl:ObjectProperty>
+
 <owl:DatatypeProperty rdf:about="#articleCode">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
   <rdfs:domain rdf:resource="#Article"/>
@@ -32,6 +37,12 @@
 <owl:DatatypeProperty rdf:about="#summary">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
   <rdfs:domain rdf:resource="#Article"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#keywordLabel">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Keyword"/>
   <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
 </owl:DatatypeProperty>
 
@@ -50,6 +61,219 @@
 <owl:Class rdf:about="#LessonTopic">
   <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 </owl:Class>
+
+<owl:NamedIndividual rdf:about="#Keyword_опьянение">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">опьянение</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_пьяный">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_опьянение"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">пьяный</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_нетрезвый">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_опьянение"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">нетрезвый</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_выпивший">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_опьянение"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">выпивший</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_алкогольный">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_опьянение"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">алкогольный</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_распитие">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">распитие</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_употребление">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_распитие"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">употребление</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_пить">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_распитие"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">пить</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_выпивка">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_распитие"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">выпивка</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_хулиганство">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">хулиганство</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_хулиган">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_хулиганство"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">хулиган</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_безобразие">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_хулиганство"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">безобразие</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_скандал">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_хулиганство"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">скандал</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_общественный">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">общественный</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_общество">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_общественный"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">общество</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_порядок">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_общественный"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">порядок</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_нравственность">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_общественный"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">нравственность</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_штраф">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">штраф</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_неуплата">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_штраф"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">неуплата</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_оплата">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_штраф"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">оплата</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_постановление">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_штраф"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">постановление</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_экстремизм">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">экстремизм</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_экстремистский">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_экстремизм"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">экстремистский</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_радикальный">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_экстремизм"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">радикальный</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_шум">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">шум</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_громкий">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_шум"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">громкий</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_крики">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_шум"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">крики</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_музыка">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_шум"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">музыка</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_громкость">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_шум"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">громкость</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_курение">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">курение</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_табак">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_курение"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">табак</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_сигарета">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_курение"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">сигарета</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_никотин">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_курение"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">никотин</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_оскорбление">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">оскорбление</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_оскорблять">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_оскорбление"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">оскорблять</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_брань">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_оскорбление"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">брань</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_нецензурный">
+  <rdf:type rdf:resource="#Keyword"/>
+  <synonymOf rdf:resource="#Keyword_оскорбление"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">нецензурный</keywordLabel>
+</owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Article_20_1">
   <rdf:type rdf:resource="#Article"/>
@@ -76,30 +300,12 @@
 
 <owl:NamedIndividual rdf:about="#Keyword_мелкое">
   <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_хулиганство">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_брань">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_оскорбление">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_общественный">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_порядок">
-  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">мелкое</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_драка">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">драка</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Article_20_20">
@@ -127,30 +333,27 @@
 
 <owl:NamedIndividual rdf:about="#Keyword_алкоголь">
   <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_распитие">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_опьянение">
-  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">алкоголь</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_парк">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">парк</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_улица">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">улица</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_общественное">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">общественное</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_место">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">место</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Article_20_21">
@@ -175,16 +378,14 @@
   <describedByArticle rdf:resource="#Article_20_21"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="#Keyword_пьяный">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="#Keyword_оскорбляющий">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">оскорбляющий</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_достоинство">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">достоинство</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Article_20_25">
@@ -209,28 +410,96 @@
   <describedByArticle rdf:resource="#Article_20_25"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="#Keyword_штраф">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_неуплата">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="#Keyword_срок">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">срок</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_уклонение">
   <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="#Keyword_постановление">
-  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">уклонение</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_наказание">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">наказание</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Article_20_3">
+  <rdf:type rdf:resource="#Article"/>
+  <mapsToLesson rdf:resource="#Lesson_noise_disturbance"/>
+  <hasKeyword rdf:resource="#Keyword_шум"/>
+  <hasKeyword rdf:resource="#Keyword_тишина"/>
+  <hasKeyword rdf:resource="#Keyword_покой"/>
+  <hasKeyword rdf:resource="#Keyword_ночь"/>
+  <hasKeyword rdf:resource="#Keyword_музыка"/>
+  <hasKeyword rdf:resource="#Keyword_громкий"/>
+  <hasKeyword rdf:resource="#Keyword_крики"/>
+  <hasKeyword rdf:resource="#Keyword_соседи"/>
+  <articleCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20.3</articleCode>
+  <summary rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Нарушение тишины и покоя граждан в ночное время, включая громкое воспроизведение музыки и крики.</summary>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Lesson_noise_disturbance">
+  <rdf:type rdf:resource="#LessonTopic"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Offense_noise_disturbance">
+  <rdf:type rdf:resource="#Offense"/>
+  <describedByArticle rdf:resource="#Article_20_3"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_тишина">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">тишина</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_покой">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">покой</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_ночь">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ночь</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_соседи">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">соседи</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Article_20_6">
+  <rdf:type rdf:resource="#Article"/>
+  <mapsToLesson rdf:resource="#Lesson_smoking_restricted_areas"/>
+  <hasKeyword rdf:resource="#Keyword_курение"/>
+  <hasKeyword rdf:resource="#Keyword_табак"/>
+  <hasKeyword rdf:resource="#Keyword_сигарета"/>
+  <hasKeyword rdf:resource="#Keyword_кальян"/>
+  <hasKeyword rdf:resource="#Keyword_никотин"/>
+  <hasKeyword rdf:resource="#Keyword_запрещённое"/>
+  <hasKeyword rdf:resource="#Keyword_место"/>
+  <articleCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20.6</articleCode>
+  <summary rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Курение табака, никотинсодержащей продукции или использование кальяна в местах, где это запрещено.</summary>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Lesson_smoking_restricted_areas">
+  <rdf:type rdf:resource="#LessonTopic"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Offense_smoking_restricted_areas">
+  <rdf:type rdf:resource="#Offense"/>
+  <describedByArticle rdf:resource="#Article_20_6"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_кальян">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">кальян</keywordLabel>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#Keyword_запрещённое">
+  <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">запрещённое</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Article_20_29">
@@ -255,28 +524,29 @@
   <describedByArticle rdf:resource="#Article_20_29"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="#Keyword_экстремизм">
-  <rdf:type rdf:resource="#Keyword"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="#Keyword_материалы">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">материалы</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_распространение">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">распространение</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_список">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">список</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_публикация">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">публикация</keywordLabel>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="#Keyword_сеть">
   <rdf:type rdf:resource="#Keyword"/>
+  <keywordLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">сеть</keywordLabel>
 </owl:NamedIndividual>
 
 

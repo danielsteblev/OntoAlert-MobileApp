@@ -20,6 +20,12 @@ def validate() -> None:
     for article in articles:
         if not getattr(article, "articleCode", []):
             raise RuntimeError(f"Article {article.name} has no articleCode.")
+        keywords = getattr(article, "hasKeyword", [])
+        if not keywords:
+            raise RuntimeError(f"Article {article.name} has no keywords.")
+        for keyword in keywords:
+            if not getattr(keyword, "keywordLabel", []):
+                raise RuntimeError(f"Keyword {keyword.name} has no keywordLabel.")
 
     print(f"Validated ontology with {len(articles)} articles.")
 
