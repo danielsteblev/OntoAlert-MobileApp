@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+python manage.py migrate
 python manage.py migrate --run-syncdb
 python manage.py collectstatic --noinput
 python manage.py seed_demo_content
