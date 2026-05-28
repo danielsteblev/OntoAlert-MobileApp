@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "storages",
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
@@ -99,6 +100,24 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = ROOT_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+from config.storage import configure_storages, use_object_storage  # noqa: E402
+
+USE_OBJECT_STORAGE = use_object_storage()
+STORAGES = configure_storages()
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+PUBLIC_MEDIA_BASE_URL = os.getenv("PUBLIC_MEDIA_BASE_URL", "").strip()
+
+if USE_OBJECT_STORAGE:
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", "")
+    AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL", "https://storage.yandexcloud.net")
+    AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "ru-central1")
+    AWS_LOCATION = os.getenv("AWS_LOCATION", "media")
+    AWS_QUERYSTRING_AUTH = os.getenv("AWS_QUERYSTRING_AUTH", "true").lower() == "true"
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
 
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if origin.strip()]
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]

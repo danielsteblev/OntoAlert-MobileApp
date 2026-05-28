@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../app/app_session.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/models/app_models.dart';
+import '../../../core/storage/document_cache_service.dart';
+import '../../documents/presentation/document_viewer_screen.dart';
+import '../../documents/presentation/documents_catalog_screen.dart';
 import '../../bookmarks/presentation/bookmarks_screen.dart';
 import '../../lessons/presentation/lesson_catalog_screen.dart';
 import '../../lessons/presentation/lesson_detail_screen.dart';
@@ -28,9 +31,19 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _currentIndex = 0;
   final Set<int> _viewedStoryIds = <int>{};
+  final DocumentCacheService _documentCache = DocumentCacheService();
 
   Future<List<LessonSummary>> _loadLessons() => widget.apiClient.fetchLessons();
   Future<List<HintStory>> _loadHints() => widget.apiClient.fetchHints();
+  Future<List<LegalDocument>> _loadDocuments() async {
+    try {
+      final documents = await widget.apiClient.fetchDocuments();
+      await _documentCache.saveManifest(documents);
+      return documents;
+    } catch (_) {
+      return _documentCache.readCachedManifest();
+    }
+  }
   Future<List<LessonSummary>> _loadBookmarks() =>
       widget.apiClient.fetchBookmarks();
 
@@ -121,6 +134,31 @@ class _HomeShellState extends State<HomeShell> {
     }
   }
 
+  Future<void> _openDocuments(List<LegalDocument> documents) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DocumentsCatalogScreen(
+          documents: documents,
+          cacheService: _documentCache,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openDocument(LegalDocument document) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DocumentViewerScreen(
+          document: document,
+          cacheService: _documentCache,
+        ),
+      ),
+    );
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   Future<void> _openStory(HintStory story) async {
     setState(() => _viewedStoryIds.add(story.id));
     await Navigator.of(context).push(
@@ -137,12 +175,16 @@ class _HomeShellState extends State<HomeShell> {
       _HomeDashboard(
         lessonsFuture: _loadLessons(),
         hintsFuture: _loadHints(),
+        documentsFuture: _loadDocuments(),
         onOpenLesson: _openLesson,
         onToggleBookmark: _toggleLessonBookmark,
         onOpenSearch: _openSearch,
         onOpenSearchHistory: _openSearchHistory,
         onOpenAllLessons: _openAllLessons,
         onOpenStory: _openStory,
+        onOpenDocuments: _openDocuments,
+        onOpenDocument: _openDocument,
+        documentCache: _documentCache,
         viewedStoryIds: _viewedStoryIds,
       ),
       FutureBuilder<List<LessonSummary>>(
@@ -202,23 +244,31 @@ class _HomeDashboard extends StatelessWidget {
   const _HomeDashboard({
     required this.lessonsFuture,
     required this.hintsFuture,
+    required this.documentsFuture,
     required this.onOpenLesson,
     required this.onToggleBookmark,
     required this.onOpenSearch,
     required this.onOpenSearchHistory,
     required this.onOpenAllLessons,
     required this.onOpenStory,
+    required this.onOpenDocuments,
+    required this.onOpenDocument,
+    required this.documentCache,
     required this.viewedStoryIds,
   });
 
   final Future<List<LessonSummary>> lessonsFuture;
   final Future<List<HintStory>> hintsFuture;
+  final Future<List<LegalDocument>> documentsFuture;
   final Future<void> Function(LessonSummary lesson) onOpenLesson;
   final Future<void> Function(LessonSummary lesson) onToggleBookmark;
   final Future<void> Function() onOpenSearch;
   final Future<void> Function() onOpenSearchHistory;
   final Future<void> Function() onOpenAllLessons;
   final Future<void> Function(HintStory story) onOpenStory;
+  final Future<void> Function(List<LegalDocument> documents) onOpenDocuments;
+  final Future<void> Function(LegalDocument document) onOpenDocument;
+  final DocumentCacheService documentCache;
   final Set<int> viewedStoryIds;
 
   @override
@@ -319,9 +369,14 @@ class _HomeDashboard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: _DocumentsSection(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _DocumentsSection(
+            documentsFuture: documentsFuture,
+            documentCache: documentCache,
+            onOpenDocuments: onOpenDocuments,
+            onOpenDocument: onOpenDocument,
+          ),
         ),
       ],
     );
@@ -606,81 +661,136 @@ class _LessonCard extends StatelessWidget {
 }
 
 class _DocumentsSection extends StatelessWidget {
-  const _DocumentsSection();
+  const _DocumentsSection({
+    required this.documentsFuture,
+    required this.documentCache,
+    required this.onOpenDocuments,
+    required this.onOpenDocument,
+  });
 
-  static const _documents = <String>[
-    'Конституция',
-    'Трудовой кодекс',
-    'Гражданский кодекс',
-  ];
+  final Future<List<LegalDocument>> documentsFuture;
+  final DocumentCacheService documentCache;
+  final Future<void> Function(List<LegalDocument> documents) onOpenDocuments;
+  final Future<void> Function(LegalDocument document) onOpenDocument;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF282828),
-        borderRadius: BorderRadius.circular(28),
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
+    return FutureBuilder<List<LegalDocument>>(
+      future: documentsFuture,
+      builder: (context, snapshot) {
+        final documents = snapshot.data ?? const <LegalDocument>[];
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF282828),
+            borderRadius: BorderRadius.circular(28),
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  'Полезные документы',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-                ),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Полезные документы',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: documents.isEmpty
+                        ? null
+                        : () => onOpenDocuments(documents),
+                    child: const Row(
+                      children: [
+                        Text(
+                          'Смотреть все',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2E83FF),
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded,
+                            color: Color(0xFF2E83FF)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                'Смотреть все',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2E83FF),
-                ),
-              ),
-              Icon(Icons.chevron_right_rounded, color: Color(0xFF2E83FF)),
+              const SizedBox(height: 16),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const Center(child: CircularProgressIndicator())
+              else if (documents.isEmpty)
+                const Text(
+                  'Загрузите PDF в Django admin.\nОфлайн-доступ появится после первого скачивания.',
+                  style: TextStyle(color: Colors.white70),
+                )
+              else
+                ...documents.take(3).map(
+                      (document) => FutureBuilder<bool>(
+                        future: documentCache.isCached(document),
+                        builder: (context, cachedSnapshot) {
+                          final isCached = cachedSnapshot.data ?? false;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: GestureDetector(
+                              onTap: () => onOpenDocument(document),
+                              child: Container(
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF3A3A3A),
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        document.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    if (isCached)
+                                      const Padding(
+                                        padding: EdgeInsets.only(right: 8),
+                                        child: Icon(
+                                          Icons.offline_pin_rounded,
+                                          color: Color(0xFF2E83FF),
+                                          size: 20,
+                                        ),
+                                      ),
+                                    Container(
+                                      width: 28,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.description_outlined,
+                                        color: Color(0xFF282828),
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
             ],
           ),
-          const SizedBox(height: 16),
-          ..._documents.map(
-            (document) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Container(
-                height: 58,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3A3A3A),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        document,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.description_outlined,
-                          color: Color(0xFF282828), size: 18),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

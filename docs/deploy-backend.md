@@ -98,6 +98,12 @@ flutter build apk --release --dart-define=API_BASE_URL=http://your-server
 - `backend` and `db` stay inside the Docker network.
 - Static and media files are served by `nginx`.
 
+## Legal documents and object storage
+
+- Upload PDF files in Django admin (`Legal documents`).
+- Local files are served from `/media/` via nginx.
+- For Yandex Object Storage (S3-compatible), see [object-storage.md](./object-storage.md).
+
 ## Recommended next step
 
 Add HTTPS with Let's Encrypt or place the stack behind an external reverse proxy.

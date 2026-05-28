@@ -295,6 +295,58 @@ class SearchResult {
   }
 }
 
+class LegalDocument {
+  const LegalDocument({
+    required this.id,
+    required this.title,
+    required this.slug,
+    required this.description,
+    required this.fileUrl,
+    required this.fileSize,
+    required this.mimeType,
+    required this.updatedAt,
+    required this.storageBackend,
+  });
+
+  final int id;
+  final String title;
+  final String slug;
+  final String description;
+  final String fileUrl;
+  final int fileSize;
+  final String mimeType;
+  final String updatedAt;
+  final String storageBackend;
+
+  factory LegalDocument.fromJson(Map<String, dynamic> json) {
+    return LegalDocument(
+      id: _asInt(json['id']),
+      title: json['title']?.toString() ?? '',
+      slug: json['slug']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      fileUrl: json['file_url']?.toString() ?? '',
+      fileSize: _asInt(json['file_size']),
+      mimeType: json['mime_type']?.toString() ?? 'application/pdf',
+      updatedAt: json['updated_at']?.toString() ?? '',
+      storageBackend: json['storage_backend']?.toString() ?? 'local',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'slug': slug,
+      'description': description,
+      'file_url': fileUrl,
+      'file_size': fileSize,
+      'mime_type': mimeType,
+      'updated_at': updatedAt,
+      'storage_backend': storageBackend,
+    };
+  }
+}
+
 class RecommendationItem {
   const RecommendationItem({
     required this.lesson,

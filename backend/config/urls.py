@@ -22,6 +22,7 @@ urlpatterns = [
     path("api/search/", include("apps.search.urls")),
     path("api/recommendations/", include("apps.recommendations.urls")),
     path("api/hints/", include("apps.content.urls")),
+    path("api/documents/", include("apps.content.document_urls")),
 ]
 
 if settings.DEBUG:

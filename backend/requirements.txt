@@ -12,3 +12,5 @@ rdflib==7.1.4
 owlready2==0.48
 pillow==12.2.0
 whitenoise
+django-storages==1.14.6
+boto3==1.37.38

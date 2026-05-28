@@ -138,6 +138,19 @@ class ApiClient {
     }
   }
 
+  Future<List<LegalDocument>> fetchDocuments() async {
+    final response = await http.get(_uri('/api/documents/'), headers: _headers);
+    final data = _decode(response) as List<dynamic>;
+    return data
+        .map((item) => LegalDocument.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<LegalDocument> fetchDocumentDetail(String slug) async {
+    final response = await http.get(_uri('/api/documents/$slug/'), headers: _headers);
+    return LegalDocument.fromJson(_decode(response) as Map<String, dynamic>);
+  }
+
   Future<List<HintStory>> fetchHints() async {
     final response = await http.get(_uri('/api/hints/'), headers: _headers);
     final data = _decode(response) as List<dynamic>;
