@@ -101,3 +101,17 @@ flutter build apk --release --dart-define=API_BASE_URL=http://your-server
 ## Recommended next step
 
 Add HTTPS with Let's Encrypt or place the stack behind an external reverse proxy.
+
+## CI/CD (GitHub Actions)
+
+This repository includes `.github/workflows/main.yml` with:
+
+- backend CI (`manage.py check`, `manage.py test`)
+- mobile CI (`flutter analyze`, `flutter test`)
+- backend deploy over SSH on push to `main`
+
+Configure these repository secrets before enabling deploy:
+
+- `SSH_HOST` - server IP or domain
+- `SSH_USERNAME` - server user (for example `steblev`)
+- `SSH_PRIVATE_KEY` - private SSH key that can access the server
