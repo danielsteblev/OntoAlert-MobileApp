@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1180" viewBox="0 0 1700 1180">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 30px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 14px Arial, sans-serif; fill: #475569; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 16; }
+      .panel-soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.5; rx: 16; }
+      .header-blue { fill: #2563eb; rx: 16; }
+      .header-violet { fill: #7c3aed; rx: 16; }
+      .header-green { fill: #059669; rx: 16; }
+      .header-amber { fill: #d97706; rx: 16; }
+      .header-rose { fill: #e11d48; rx: 16; }
+      .header-slate { fill: #334155; rx: 16; }
+      .box-title { font: 700 18px Arial, sans-serif; fill: #ffffff; }
+      .text { font: 14px Arial, sans-serif; fill: #1e293b; }
+      .mono { font: 14px 'Courier New', monospace; fill: #0f172a; }
+      .muted { font: 13px Arial, sans-serif; fill: #64748b; }
+      .arrow { stroke: #475569; stroke-width: 2.8; fill: none; marker-end: url(#arrow); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 2.3; fill: none; marker-end: url(#arrow-soft); }
+      .label { font: 700 14px Arial, sans-serif; fill: #334155; }
+      .label-soft { font: 700 13px Arial, sans-serif; fill: #64748b; }
+      .note { fill: #eef2ff; stroke: #c7d2fe; stroke-width: 1.5; rx: 14; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#475569"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1700" height="1180"/>
+  <text class="title" x="60" y="56">OntoAlert Ontology Diagram</text>
+  <text class="subtitle" x="60" y="84">Based on `ontology/scripts/build_chapter20_ontology.py` and generated `ontology/data/chapter20.owl`</text>
+
+  <g transform="translate(60,120)">
+    <rect class="panel" width="1580" height="500"/>
+    <rect class="header-violet" width="1580" height="44"/>
+    <text class="box-title" x="20" y="29">1. Ontology Schema (TBox)</text>
+
+    <g transform="translate(60,100)">
+      <rect class="panel" width="290" height="130"/>
+      <rect class="header-blue" width="290" height="40"/>
+      <text class="box-title" x="18" y="26">Offense</text>
+      <text class="text" x="18" y="68">OWL Class</text>
+      <text class="muted" x="18" y="94">Administrative offense scenario</text>
+    </g>
+
+    <g transform="translate(430,80)">
+      <rect class="panel" width="340" height="180"/>
+      <rect class="header-green" width="340" height="40"/>
+      <text class="box-title" x="18" y="26">Article</text>
+      <text class="text" x="18" y="66">OWL Class</text>
+      <text class="text" x="18" y="94">Datatype properties:</text>
+      <text class="mono" x="18" y="120">articleCode : xsd:string</text>
+      <text class="mono" x="18" y="146">summary : xsd:string</text>
+    </g>
+
+    <g transform="translate(870,100)">
+      <rect class="panel" width="290" height="130"/>
+      <rect class="header-amber" width="290" height="40"/>
+      <text class="box-title" x="18" y="26">Keyword</text>
+      <text class="text" x="18" y="68">OWL Class</text>
+      <text class="muted" x="18" y="94">Semantic keyword / search token</text>
+    </g>
+
+    <g transform="translate(1240,100)">
+      <rect class="panel" width="290" height="130"/>
+      <rect class="header-rose" width="290" height="40"/>
+      <text class="box-title" x="18" y="26">LessonTopic</text>
+      <text class="text" x="18" y="68">OWL Class</text>
+      <text class="muted" x="18" y="94">Ontology link to lesson topic</text>
+    </g>
+
+    <path class="arrow" d="M350 165 L430 165"/>
+    <text class="label" x="362" y="150">describedByArticle</text>
+    <text class="label-soft" x="388" y="184">Offense -&gt; Article</text>
+
+    <path class="arrow" d="M770 145 L870 145"/>
+    <text class="label" x="792" y="130">hasKeyword</text>
+    <text class="label-soft" x="796" y="164">Article -&gt; Keyword</text>
+
+    <path class="arrow" d="M770 205 L1240 205"/>
+    <text class="label" x="955" y="192">mapsToLesson</text>
+    <text class="label-soft" x="966" y="226">Article -&gt; LessonTopic</text>
+
+    <g transform="translate(70,310)">
+      <rect class="note" width="1460" height="140"/>
+      <text class="text" x="18" y="30">Schema summary</text>
+      <text class="text" x="18" y="58">All four ontology concepts are direct subclasses of `owl:Thing`.</text>
+      <text class="text" x="18" y="86">`articleCode` and `summary` are `FunctionalProperty`, so each `Article` has one code and one textual summary.</text>
+      <text class="text" x="18" y="114">The search service loads article-keyword pairs from the OWL file and uses them to enrich topic matching.</text>
+    </g>
+  </g>
+
+  <g transform="translate(60,660)">
+    <rect class="panel-soft" width="1580" height="460"/>
+    <rect class="header-slate" width="1580" height="44"/>
+    <text class="box-title" x="20" y="29">2. Example Individuals from `chapter20.owl` (ABox)</text>
+
+    <g transform="translate(40,90)">
+      <rect class="panel" width="320" height="150"/>
+      <rect class="header-blue" width="320" height="40"/>
+      <text class="box-title" x="18" y="26">Offense_petty_hooliganism</text>
+      <text class="mono" x="18" y="68">rdf:type Offense</text>
+      <text class="mono" x="18" y="96">describedByArticle =</text>
+      <text class="mono" x="18" y="120">Article_20_1</text>
+    </g>
+
+    <g transform="translate(460,70)">
+      <rect class="panel" width="460" height="190"/>
+      <rect class="header-green" width="460" height="40"/>
+      <text class="box-title" x="18" y="26">Article_20_1</text>
+      <text class="mono" x="18" y="68">rdf:type Article</text>
+      <text class="mono" x="18" y="96">articleCode = "20.1"</text>
+      <text class="mono" x="18" y="124">summary = "Public order violation summary..."</text>
+      <text class="mono" x="18" y="152">mapsToLesson = Lesson_petty_hooliganism</text>
+      <text class="mono" x="18" y="176">hasKeyword = 7 keyword individuals</text>
+    </g>
+
+    <g transform="translate(1040,90)">
+      <rect class="panel" width="240" height="150"/>
+      <rect class="header-rose" width="240" height="40"/>
+      <text class="box-title" x="18" y="26">Lesson_petty_hooliganism</text>
+      <text class="mono" x="18" y="68">rdf:type LessonTopic</text>
+      <text class="muted" x="18" y="98">Linked from the article</text>
+    </g>
+
+    <g transform="translate(1360,70)">
+      <rect class="panel" width="180" height="190"/>
+      <rect class="header-amber" width="180" height="40"/>
+      <text class="box-title" x="18" y="26">Keywords</text>
+      <text class="mono" x="18" y="68">Keyword_melkoe</text>
+      <text class="mono" x="18" y="92">Keyword_huliganstvo</text>
+      <text class="mono" x="18" y="116">Keyword_bran</text>
+      <text class="mono" x="18" y="140">Keyword_oskorblenie</text>
+      <text class="mono" x="18" y="164">...</text>
+    </g>
+
+    <path class="arrow" d="M360 165 L460 165"/>
+    <text class="label" x="372" y="150">describedByArticle</text>
+
+    <path class="arrow" d="M920 165 L1040 165"/>
+    <text class="label" x="945" y="150">mapsToLesson</text>
+
+    <path class="arrow" d="M920 205 L1360 205"/>
+    <text class="label" x="1080" y="192">hasKeyword*</text>
+
+    <g transform="translate(60,300)">
+      <rect class="note" width="1480" height="120"/>
+      <text class="text" x="18" y="30">How this is used in the app</text>
+      <text class="text" x="18" y="58">`build_chapter20_ontology.py` generates these individuals from `chapter20_seed.json`.</text>
+      <text class="text" x="18" y="86">At runtime, `backend/apps/search/services.py` reads `articleCode` and `hasKeyword` values to improve semantic search over topics.</text>
+    </g>
+  </g>
+</svg>

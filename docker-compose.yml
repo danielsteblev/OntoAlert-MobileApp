@@ -1,16 +1,44 @@
 services:
   db:
     image: postgres:16
-    container_name: fastlearning-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: fastlearning
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${DATABASE_NAME:-fastlearning}
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      ONTOLOGY_PATH: /app/ontology/data/chapter20.owl
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - media_data:/app/media:ro
+      - static_data:/app/staticfiles:ro
+
 volumes:
   postgres_data:
+  media_data:
+  static_data:

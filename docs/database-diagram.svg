@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1180" viewBox="0 0 1600 1180">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 30px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 14px Arial, sans-serif; fill: #475569; }
+      .entity-title { font: 700 18px Arial, sans-serif; fill: #ffffff; }
+      .field { font: 14px 'Courier New', monospace; fill: #1e293b; }
+      .field-muted { font: 14px 'Courier New', monospace; fill: #64748b; }
+      .rel { stroke: #475569; stroke-width: 2.5; fill: none; }
+      .rel-label { font: 700 16px Arial, sans-serif; fill: #334155; }
+      .card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 14; }
+      .head-blue { fill: #2563eb; rx: 14; }
+      .head-green { fill: #059669; rx: 14; }
+      .head-violet { fill: #7c3aed; rx: 14; }
+      .head-amber { fill: #d97706; rx: 14; }
+      .head-rose { fill: #e11d48; rx: 14; }
+      .head-slate { fill: #334155; rx: 14; }
+      .note { fill: #eef2ff; stroke: #c7d2fe; stroke-width: 1.5; rx: 12; }
+      .note-text { font: 14px Arial, sans-serif; fill: #3730a3; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1180"/>
+  <text class="title" x="60" y="56">OntoAlert Database Diagram</text>
+  <text class="subtitle" x="60" y="84">Derived from Django models in backend/apps/lessons and backend/apps/content</text>
+
+  <g transform="translate(60,120)">
+    <rect class="card" width="290" height="180"/>
+    <rect class="head-slate" width="290" height="42"/>
+    <text class="entity-title" x="18" y="27">AUTH_USER</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">username : string</text>
+    <text class="field" x="18" y="116">email : string</text>
+    <text class="field-muted" x="18" y="140">password : string</text>
+    <text class="field-muted" x="18" y="164">managed by Django auth</text>
+  </g>
+
+  <g transform="translate(450,120)">
+    <rect class="card" width="320" height="210"/>
+    <rect class="head-blue" width="320" height="42"/>
+    <text class="entity-title" x="18" y="27">TOPIC</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">title : varchar(255)</text>
+    <text class="field" x="18" y="116">slug : slug UNIQUE</text>
+    <text class="field" x="18" y="140">article_code : varchar(50)</text>
+    <text class="field" x="18" y="164">summary : text</text>
+    <text class="field" x="18" y="188">semantic_keywords : json</text>
+  </g>
+
+  <g transform="translate(1090,120)">
+    <rect class="card" width="330" height="235"/>
+    <rect class="head-violet" width="330" height="42"/>
+    <text class="entity-title" x="18" y="27">HINT_STORY</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">title : varchar(255)</text>
+    <text class="field" x="18" y="116">subtitle : varchar(255)</text>
+    <text class="field" x="18" y="140">body : text</text>
+    <text class="field" x="18" y="164">highlight_text : varchar(255)</text>
+    <text class="field" x="18" y="188">image : image</text>
+    <text class="field" x="18" y="212">sort_order, is_active, created_at</text>
+  </g>
+
+  <g transform="translate(400,410)">
+    <rect class="card" width="420" height="305"/>
+    <rect class="head-green" width="420" height="42"/>
+    <text class="entity-title" x="18" y="27">LESSON</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">FK  topic_id -&gt; TOPIC.id</text>
+    <text class="field" x="18" y="116">title : varchar(255)</text>
+    <text class="field" x="18" y="140">slug : slug UNIQUE</text>
+    <text class="field" x="18" y="164">short_description : text</text>
+    <text class="field" x="18" y="188">theory : text</text>
+    <text class="field" x="18" y="212">article_excerpt : text</text>
+    <text class="field" x="18" y="236">cover_image : image</text>
+    <text class="field" x="18" y="260">sort_order, rating, learners_count</text>
+    <text class="field" x="18" y="284">difficulty, estimated_minutes</text>
+  </g>
+
+  <g transform="translate(80,440)">
+    <rect class="card" width="260" height="130"/>
+    <rect class="head-amber" width="260" height="42"/>
+    <text class="entity-title" x="18" y="27">BOOKMARK</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">FK  user_id -&gt; AUTH_USER.id</text>
+    <text class="field" x="18" y="116">FK  lesson_id -&gt; LESSON.id</text>
+  </g>
+
+  <g transform="translate(80,620)">
+    <rect class="card" width="260" height="150"/>
+    <rect class="head-rose" width="260" height="42"/>
+    <text class="entity-title" x="18" y="27">LESSON_ATTEMPT</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">FK  user_id -&gt; AUTH_USER.id</text>
+    <text class="field" x="18" y="116">FK  lesson_id -&gt; LESSON.id</text>
+    <text class="field" x="18" y="140">score_percent, rating, completed_at</text>
+  </g>
+
+  <g transform="translate(950,430)">
+    <rect class="card" width="330" height="150"/>
+    <rect class="head-blue" width="330" height="42"/>
+    <text class="entity-title" x="18" y="27">QUESTION</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">FK  lesson_id -&gt; LESSON.id</text>
+    <text class="field" x="18" y="116">prompt : text</text>
+    <text class="field" x="18" y="140">explanation : text</text>
+  </g>
+
+  <g transform="translate(950,650)">
+    <rect class="card" width="330" height="130"/>
+    <rect class="head-green" width="330" height="42"/>
+    <text class="entity-title" x="18" y="27">ANSWER_OPTION</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">FK  question_id -&gt; QUESTION.id</text>
+    <text class="field" x="18" y="116">text, is_correct</text>
+  </g>
+
+  <g transform="translate(1090,470)">
+    <rect class="card" width="330" height="130"/>
+    <rect class="head-violet" width="330" height="42"/>
+    <text class="entity-title" x="18" y="27">HINT_STORY_SLIDE</text>
+    <text class="field" x="18" y="68">PK  id : bigint</text>
+    <text class="field" x="18" y="92">FK  story_id -&gt; HINT_STORY.id</text>
+    <text class="field" x="18" y="116">image, sort_order</text>
+  </g>
+
+  <g>
+    <line class="rel" x1="610" y1="330" x2="610" y2="410"/>
+    <text class="rel-label" x="590" y="360">1</text>
+    <text class="rel-label" x="620" y="395">N</text>
+
+    <line class="rel" x1="820" y1="495" x2="950" y2="495"/>
+    <text class="rel-label" x="840" y="484">1</text>
+    <text class="rel-label" x="924" y="484">N</text>
+
+    <line class="rel" x1="1115" y1="580" x2="1115" y2="650"/>
+    <text class="rel-label" x="1094" y="615">1</text>
+    <text class="rel-label" x="1125" y="640">N</text>
+
+    <line class="rel" x1="1255" y1="355" x2="1255" y2="470"/>
+    <text class="rel-label" x="1235" y="408">1</text>
+    <text class="rel-label" x="1265" y="454">N</text>
+
+    <line class="rel" x1="350" y1="505" x2="400" y2="505"/>
+    <text class="rel-label" x="360" y="494">N</text>
+    <text class="rel-label" x="382" y="494">1</text>
+
+    <line class="rel" x1="350" y1="695" x2="400" y2="695"/>
+    <text class="rel-label" x="360" y="684">N</text>
+    <text class="rel-label" x="382" y="684">1</text>
+
+    <line class="rel" x1="205" y1="300" x2="205" y2="440"/>
+    <text class="rel-label" x="184" y="355">1</text>
+    <text class="rel-label" x="215" y="424">N</text>
+
+    <line class="rel" x1="205" y1="300" x2="205" y2="620"/>
+    <text class="rel-label" x="184" y="470">1</text>
+    <text class="rel-label" x="215" y="604">N</text>
+  </g>
+
+  <g transform="translate(60,870)">
+    <rect class="note" width="1480" height="240"/>
+    <text class="note-text" x="20" y="34">Relationships</text>
+    <text class="field" x="20" y="70">TOPIC 1 - N LESSON</text>
+    <text class="field" x="20" y="98">LESSON 1 - N QUESTION</text>
+    <text class="field" x="20" y="126">QUESTION 1 - N ANSWER_OPTION</text>
+    <text class="field" x="20" y="154">AUTH_USER 1 - N BOOKMARK</text>
+    <text class="field" x="20" y="182">LESSON 1 - N BOOKMARK</text>
+    <text class="field" x="20" y="210">AUTH_USER 1 - N LESSON_ATTEMPT</text>
+
+    <text class="field" x="520" y="70">LESSON 1 - N LESSON_ATTEMPT</text>
+    <text class="field" x="520" y="98">HINT_STORY 1 - N HINT_STORY_SLIDE</text>
+    <text class="field" x="520" y="126">BOOKMARK unique_together(user, lesson)</text>
+    <text class="field" x="520" y="154">LESSON_ATTEMPT unique_together(user, lesson)</text>
+    <text class="field" x="520" y="182">Database engine: PostgreSQL in Docker, SQLite fallback in local dev</text>
+  </g>
+</svg>

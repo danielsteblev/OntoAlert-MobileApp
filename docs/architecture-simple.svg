@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 30px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 15px Arial, sans-serif; fill: #475569; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 18; }
+      .head-blue { fill: #2563eb; rx: 18; }
+      .head-green { fill: #059669; rx: 18; }
+      .head-violet { fill: #7c3aed; rx: 18; }
+      .head-amber { fill: #d97706; rx: 18; }
+      .box-title { font: 700 22px Arial, sans-serif; fill: #ffffff; }
+      .text { font: 15px Arial, sans-serif; fill: #1e293b; }
+      .muted { font: 14px Arial, sans-serif; fill: #64748b; }
+      .arrow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .arrow-dashed { stroke: #94a3b8; stroke-width: 3; stroke-dasharray: 9 7; fill: none; marker-end: url(#arrowhead-soft); }
+      .label { font: 700 14px Arial, sans-serif; fill: #334155; }
+      .note { fill: #eef2ff; stroke: #c7d2fe; stroke-width: 1.5; rx: 14; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#475569"/>
+    </marker>
+    <marker id="arrowhead-soft" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1400" height="820"/>
+  <text class="title" x="60" y="56">OntoAlert Simple Architecture</text>
+  <text class="subtitle" x="60" y="84">Simplified scheme matching the current Flutter + Django + OWL + PostgreSQL project</text>
+
+  <g transform="translate(80,180)">
+    <rect class="box" width="260" height="180"/>
+    <rect class="head-blue" width="260" height="46"/>
+    <text class="box-title" x="20" y="30">Flutter App</text>
+    <text class="text" x="20" y="82">Mobile client</text>
+    <text class="text" x="20" y="110">Auth, Home, Search, Lessons</text>
+    <text class="text" x="20" y="138">Sends HTTP requests</text>
+    <text class="muted" x="20" y="164">`ApiClient` + JWT token</text>
+  </g>
+
+  <g transform="translate(520,150)">
+    <rect class="box" width="360" height="240"/>
+    <rect class="head-green" width="360" height="46"/>
+    <text class="box-title" x="20" y="30">Backend</text>
+    <text class="text" x="20" y="82">Django REST API</text>
+    <text class="text" x="20" y="112">Accounts, Lessons, Search, Content</text>
+    <text class="text" x="20" y="142">Processes requests and returns JSON</text>
+    <text class="text" x="20" y="172">Builds recommendations and search results</text>
+    <text class="muted" x="20" y="204">`/api/auth`, `/api/lessons`, `/api/search`</text>
+  </g>
+
+  <g transform="translate(1020,110)">
+    <rect class="box" width="280" height="180"/>
+    <rect class="head-violet" width="280" height="46"/>
+    <text class="box-title" x="20" y="30">Ontology</text>
+    <text class="text" x="20" y="82">OWL file</text>
+    <text class="text" x="20" y="110">Articles, keywords, lesson links</text>
+    <text class="text" x="20" y="138">Used in semantic search</text>
+    <text class="muted" x="20" y="164">`chapter20.owl`</text>
+  </g>
+
+  <g transform="translate(520,500)">
+    <rect class="box" width="360" height="180"/>
+    <rect class="head-amber" width="360" height="46"/>
+    <text class="box-title" x="20" y="30">PostgreSQL</text>
+    <text class="text" x="20" y="82">Main relational database</text>
+    <text class="text" x="20" y="110">Users, profiles, lessons, bookmarks</text>
+    <text class="text" x="20" y="138">search history, recommendations</text>
+    <text class="muted" x="20" y="164">SQLite fallback in local dev</text>
+  </g>
+
+  <path class="arrow" d="M340 270 L520 270"/>
+  <text class="label" x="390" y="255">HTTP / JSON / JWT</text>
+
+  <path class="arrow" d="M700 390 L700 500"/>
+  <text class="label" x="725" y="450">read / write data</text>
+
+  <path class="arrow" d="M880 240 L1020 200"/>
+  <text class="label" x="900" y="210">load keywords</text>
+
+  <path class="arrow-dashed" d="M1020 250 L930 250"/>
+  <text class="label" x="930" y="270">semantic enrichment</text>
+
+  <g transform="translate(980,420)">
+    <rect class="note" width="320" height="180"/>
+    <text class="text" x="18" y="34">How it works:</text>
+    <text class="text" x="18" y="66">1. Flutter sends request to Backend</text>
+    <text class="text" x="18" y="94">2. Backend reads/writes PostgreSQL</text>
+    <text class="text" x="18" y="122">3. Search loads OWL keywords</text>
+    <text class="text" x="18" y="150">4. Backend returns lessons and results</text>
+  </g>
+</svg>

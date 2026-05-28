@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1120" viewBox="0 0 1680 1120">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 30px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 14px Arial, sans-serif; fill: #475569; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 18; }
+      .panel-dashed { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 8 6; rx: 18; }
+      .header-blue { fill: #2563eb; rx: 18; }
+      .header-green { fill: #059669; rx: 18; }
+      .header-violet { fill: #7c3aed; rx: 18; }
+      .header-amber { fill: #d97706; rx: 18; }
+      .header-slate { fill: #334155; rx: 18; }
+      .header-rose { fill: #e11d48; rx: 18; }
+      .box-title { font: 700 19px Arial, sans-serif; fill: #ffffff; }
+      .text { font: 14px Arial, sans-serif; fill: #1e293b; }
+      .mono { font: 14px 'Courier New', monospace; fill: #0f172a; }
+      .muted { font: 13px Arial, sans-serif; fill: #64748b; }
+      .arrow { stroke: #475569; stroke-width: 2.8; fill: none; marker-end: url(#arrowhead); }
+      .arrow-soft { stroke: #94a3b8; stroke-width: 2.3; fill: none; marker-end: url(#arrowhead-soft); }
+      .arrow-label { font: 700 14px Arial, sans-serif; fill: #334155; }
+      .legend { fill: #eef2ff; stroke: #c7d2fe; stroke-width: 1.5; rx: 14; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#475569"/>
+    </marker>
+    <marker id="arrowhead-soft" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1680" height="1120"/>
+  <text class="title" x="60" y="56">OntoAlert Architecture Diagram</text>
+  <text class="subtitle" x="60" y="84">Flutter mobile client + Django REST API + PostgreSQL + ontology-based semantic search</text>
+
+  <g transform="translate(60,120)">
+    <rect class="panel" width="1560" height="190"/>
+    <rect class="header-blue" width="1560" height="44"/>
+    <text class="box-title" x="20" y="29">1. Client Layer - Flutter Mobile App</text>
+
+    <g transform="translate(24,64)">
+      <rect class="panel" width="300" height="94"/>
+      <text class="text" x="16" y="28">`FastLearningApp`</text>
+      <text class="text" x="16" y="52">Chooses `AuthScreen` or `HomeShell`</text>
+      <text class="muted" x="16" y="76">Entry point of the mobile UI</text>
+    </g>
+
+    <g transform="translate(360,64)">
+      <rect class="panel" width="300" height="94"/>
+      <text class="text" x="16" y="28">`AppSession`</text>
+      <text class="text" x="16" y="52">JWT token + user profile state</text>
+      <text class="muted" x="16" y="76">`ChangeNotifier` session container</text>
+    </g>
+
+    <g transform="translate(696,64)">
+      <rect class="panel" width="390" height="94"/>
+      <text class="text" x="16" y="28">`ApiClient`</text>
+      <text class="text" x="16" y="52">HTTP calls to `/api/auth`, `/api/lessons`,</text>
+      <text class="text" x="16" y="74">`/api/search`, `/api/hints`, `/api/recommendations`</text>
+    </g>
+
+    <g transform="translate(1122,64)">
+      <rect class="panel" width="414" height="94"/>
+      <text class="text" x="16" y="28">UI feature screens</text>
+      <text class="text" x="16" y="52">Auth, Home, Lesson detail, Search, Profile</text>
+      <text class="muted" x="16" y="76">Render backend data models for the student</text>
+    </g>
+  </g>
+
+  <g transform="translate(60,360)">
+    <rect class="panel" width="1560" height="380"/>
+    <rect class="header-green" width="1560" height="44"/>
+    <text class="box-title" x="20" y="29">2. Application Layer - Django REST API</text>
+
+    <g transform="translate(24,70)">
+      <rect class="panel" width="290" height="270"/>
+      <rect class="header-slate" width="290" height="38"/>
+      <text class="box-title" x="16" y="25">Routing / Entry</text>
+      <text class="text" x="16" y="64">`config/urls.py`</text>
+      <text class="text" x="16" y="92">`/api/health`</text>
+      <text class="text" x="16" y="120">`/api/auth/*`</text>
+      <text class="text" x="16" y="148">`/api/profile/me`</text>
+      <text class="text" x="16" y="176">`/api/lessons/*`</text>
+      <text class="text" x="16" y="204">`/api/search/*`</text>
+      <text class="text" x="16" y="232">`/api/recommendations/*`</text>
+      <text class="text" x="16" y="260">`/api/hints/*`</text>
+    </g>
+
+    <g transform="translate(350,70)">
+      <rect class="panel" width="290" height="270"/>
+      <rect class="header-blue" width="290" height="38"/>
+      <text class="box-title" x="16" y="25">Accounts</text>
+      <text class="text" x="16" y="64">Registration / login</text>
+      <text class="text" x="16" y="92">JWT authentication</text>
+      <text class="text" x="16" y="120">Profile read / update</text>
+      <text class="muted" x="16" y="154">Uses Django auth user model</text>
+    </g>
+
+    <g transform="translate(676,70)">
+      <rect class="panel" width="290" height="270"/>
+      <rect class="header-green" width="290" height="38"/>
+      <text class="box-title" x="16" y="25">Lessons</text>
+      <text class="text" x="16" y="64">Topic, lesson, question, answers</text>
+      <text class="text" x="16" y="92">Bookmarks</text>
+      <text class="text" x="16" y="120">Lesson attempts</text>
+      <text class="text" x="16" y="148">Demo seed bootstrap</text>
+      <text class="muted" x="16" y="182">Core educational content domain</text>
+    </g>
+
+    <g transform="translate(1002,70)">
+      <rect class="panel" width="250" height="270"/>
+      <rect class="header-violet" width="250" height="38"/>
+      <text class="box-title" x="16" y="25">Search</text>
+      <text class="text" x="16" y="64">Normalize query</text>
+      <text class="text" x="16" y="92">Match topic keywords</text>
+      <text class="text" x="16" y="120">Load OWL keywords</text>
+      <text class="text" x="16" y="148">Store search history</text>
+      <text class="muted" x="16" y="182">Returns top lessons and confidence</text>
+    </g>
+
+    <g transform="translate(1288,70)">
+      <rect class="panel" width="248" height="270"/>
+      <rect class="header-amber" width="248" height="38"/>
+      <text class="box-title" x="16" y="25">Recommendations / Content</text>
+      <text class="text" x="16" y="64">Build recommendations from:</text>
+      <text class="text" x="16" y="92">search history + bookmarks</text>
+      <text class="text" x="16" y="120">Serve hint stories and slides</text>
+      <text class="muted" x="16" y="154">Personalized content delivery</text>
+    </g>
+  </g>
+
+  <g transform="translate(60,790)">
+    <rect class="panel-dashed" width="1560" height="250"/>
+    <rect class="header-rose" width="1560" height="44"/>
+    <text class="box-title" x="20" y="29">3. Data and Knowledge Layer</text>
+
+    <g transform="translate(24,70)">
+      <rect class="panel" width="500" height="140"/>
+      <text class="text" x="16" y="30">PostgreSQL (Docker)</text>
+      <text class="text" x="16" y="58">Primary runtime database for Django models</text>
+      <text class="text" x="16" y="86">Stores users, topics, lessons, bookmarks, attempts,</text>
+      <text class="text" x="16" y="108">search history, recommendation logs, hint stories</text>
+      <text class="muted" x="16" y="128">SQLite fallback is enabled for local dev without DATABASE_HOST</text>
+    </g>
+
+    <g transform="translate(560,70)">
+      <rect class="panel" width="470" height="140"/>
+      <text class="text" x="16" y="30">Seed / content source</text>
+      <text class="mono" x="16" y="58">ontology/data/chapter20_seed.json</text>
+      <text class="text" x="16" y="86">Single source of truth for MVP content and ontology build</text>
+      <text class="muted" x="16" y="120">Used for lessons, hints, and semantic keywords</text>
+    </g>
+
+    <g transform="translate(1066,70)">
+      <rect class="panel" width="470" height="140"/>
+      <text class="text" x="16" y="30">Ontology artifacts</text>
+      <text class="mono" x="16" y="58">ontology/scripts/build_chapter20_ontology.py</text>
+      <text class="mono" x="16" y="84">ontology/data/chapter20.owl</text>
+      <text class="text" x="16" y="112">Read by search service through `owlready2`</text>
+    </g>
+  </g>
+
+  <path class="arrow" d="M840 310 L840 360"/>
+  <text class="arrow-label" x="868" y="340">HTTP + JSON + JWT</text>
+
+  <path class="arrow" d="M1127 526 L1127 790"/>
+  <text class="arrow-label" x="1147" y="670">reads / writes</text>
+
+  <path class="arrow-soft" d="M795 930 L795 850 L1127 850"/>
+  <text class="arrow-label" x="826" y="842">ontology build pipeline</text>
+
+  <path class="arrow-soft" d="M1300 930 L1300 850 L1127 850"/>
+  <text class="arrow-label" x="1288" y="842">keyword enrichment</text>
+
+  <path class="arrow-soft" d="M560 930 L530 930"/>
+  <text class="arrow-label" x="374" y="918">seed/bootstrap</text>
+
+  <g transform="translate(1160,120)">
+    <rect class="legend" width="460" height="170"/>
+    <text class="text" x="18" y="30">Main runtime flow</text>
+    <text class="text" x="18" y="58">1. Student uses Flutter app</text>
+    <text class="text" x="18" y="82">2. `ApiClient` calls Django REST endpoints</text>
+    <text class="text" x="18" y="106">3. Backend services query PostgreSQL models</text>
+    <text class="text" x="18" y="130">4. Search service enriches matches with OWL ontology</text>
+    <text class="text" x="18" y="154">5. API returns lessons, hints, and recommendations</text>
+  </g>
+</svg>
